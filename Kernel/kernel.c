@@ -3,6 +3,7 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>
+#include "keyboard.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -82,23 +83,26 @@ void * initializeKernelBinary()
 
 int main()
 {	
-	ncPrint("[Kernel Main]");
+
+	load_idt();
+
+	ncClear();
 	ncNewline();
-	ncPrint("  Sample code module at 0x");
-	ncPrintHex((uint64_t)sampleCodeModuleAddress);
-	ncNewline();
-	ncPrint("  Calling the sample code module returned: ");
-	ncPrintHex(((EntryPoint)sampleCodeModuleAddress)());
-	ncNewline();
+	ncPrintStyle("Arquitectura de computadoras", 0x30);
 	ncNewline();
 
-	ncPrint("  Sample data module at 0x");
-	ncPrintHex((uint64_t)sampleDataModuleAddress);
-	ncNewline();
-	ncPrint("  Sample data module contents: ");
-	ncPrint((char*)sampleDataModuleAddress);
+	uint8_t time_buffer[3];
+	getTime(time_buffer);
+	ncPrintHex(time_buffer[0]);
+	ncPrint(":");
+	ncPrintHex(time_buffer[1]);
+	ncPrint(":");
+	ncPrintHex(time_buffer[0]);
 	ncNewline();
 
-	ncPrint("[Finished]");
+	ncPrint("[TEXT]: ");
+	printPressedKey();
+
+
 	return 0;
 }

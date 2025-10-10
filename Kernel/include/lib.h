@@ -10,4 +10,8 @@ char *cpuVendor(char *result);
 void getTime(uint8_t *time_buffer);
 char getPressedKey();
 
+// funciones para manejo de puertos
+uint8_t inb(uint16_t port);
+void outb(uint16_t port, uint8_t data);
+
 #endif

@@ -1,7 +1,8 @@
 GLOBAL cpuVendor
 GLOBAL getTime
 GLOBAL getPressedKey
-
+GLOBAL inb
+GLOBAL outb
 section .text
 	
 cpuVendor:
@@ -91,4 +92,31 @@ getPressedKey:
 	jz .loop ; si no tiene tecla se queda esperando
 	; ahora tiene tecla
 	in al, 60h
+	ret
+
+	;inb - lee un byte del puerto E/S
+	;parametro: rdi = numero de puerto
+	;return: al = byte leido from port
+inb:
+	push rbp	
+	mov rbp, rsp
+
+	mov dx, di ; puerto en dx
+	in al, dx ; leer puerto
+
+	pop rbp
+	ret
+
+	;outb - escribe un byte al puerto E/S
+	;parametros: rdi = numero de puerto, rsi = byte a escribir
+
+outb:
+	push rbp
+	mov rbp, rsp
+
+	mov dx, di ; puerto en dx
+	mov al, sil ; byte a escribir en al
+	out dx, al ; escribir puerto
+
+	pop rbp
 	ret

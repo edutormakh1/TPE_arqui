@@ -20,23 +20,3 @@ void printPressedKey() {
     }
 }
 
-// Block until we get a make scancode (< 0x80) and translate to ASCII.
-// Returns 0 for non-printable keys or if scancode has no mapping.
-char readKeyAsciiBlocking() {
-    while (1) {
-        uint8_t sc = getPressedKey();
-        // Handle break codes (key release)
-        if (sc & 0x80) {
-            continue; // ignore releases
-        }
-        // Ignore extended scancode prefixes (0xE0, 0xE1) if they arrive
-        if (sc == 0xE0 || sc == 0xE1) {
-            continue;
-        }
-        if (sc < sizeof(scancode_to_ascii)) {
-            char ch = scancode_to_ascii[sc];
-            return ch; // may be 0 for non-printables; caller can handle
-        }
-        // If out of range, keep waiting
-    }
-}

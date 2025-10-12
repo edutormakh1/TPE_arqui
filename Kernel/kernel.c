@@ -5,6 +5,8 @@
 #include <naiveConsole.h>
 #include "keyboard.h"
 #include "time.h"
+#include <idtLoader.h>
+#include "video_driver.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -84,26 +86,28 @@ void * initializeKernelBinary()
 
 int main()
 {
-	load_idt();
+    load_idt();
 
-	ncClear();
-	ncNewline();
-	ncPrintStyle("Arquitectura de computadoras", 0x30);
-	ncNewline();
+    ncClear();
+    ncNewline();
+    ncPrintStyle("Arquitectura de computadoras", 0x30);
+    ncNewline();
 
-	
 
-	uint8_t time_buffer[3];
-	getTime(time_buffer);
-	ncPrintHex(time_buffer[0]);
-	ncPrint(":");
-	ncPrintHex(time_buffer[1]);
-	ncPrint(":");
-	ncPrintHex(time_buffer[0]);
-	ncNewline();
+    uint8_t time_buffer[3];
+    getTime(time_buffer);
+    ncPrintHex(time_buffer[0]);
+    ncPrint(":");
+    ncPrintHex(time_buffer[1]);
+    ncPrint(":");
+    ncPrintHex(time_buffer[0]);
+    ncNewline();
 
-	ncPrint("[TEXT]: ");
-	printPressedKey();
+		// Input de una línea con eco gráfico usando la fuente 8x16
+		char line[128];
+		drawString8x16(20, 40, "Hola modo Video :)", 0x00FFFFFF);
+		drawString8x16(20, 40, "Hay que mejorar la fuente ", 0x00FFFFFF);
+		
 
-	return 0;
+    return 0;
 }

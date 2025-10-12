@@ -94,9 +94,9 @@ getPressedKey:
 	in al, 60h
 	ret
 
-	;inb - lee un byte del puerto E/S
-	;parametro: rdi = numero de puerto
-	;return: al = byte leido from port
+; inb - lee un byte del puerto E/S
+; parametro: rdi = numero de puerto
+; return: al = byte leido del puerto
 inb:
 	push rbp	
 	mov rbp, rsp
@@ -107,9 +107,8 @@ inb:
 	pop rbp
 	ret
 
-	;outb - escribe un byte al puerto E/S
-	;parametros: rdi = numero de puerto, rsi = byte a escribir
-
+; outb - escribe un byte al puerto E/S
+; parametros: rdi = numero de puerto, rsi = byte a escribir
 outb:
 	push rbp
 	mov rbp, rsp
@@ -120,3 +119,4 @@ outb:
 
 	pop rbp
 	ret
+	

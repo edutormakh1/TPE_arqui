@@ -15,9 +15,9 @@ cfg_mbr:		db 0	; Did we boot off of a disk with a proper MBR
 cfg_hdd:		db 0	; Was a bootable drive detected
 
 ; Memory locations
-E820Map:		equ 0x0000000000004000 //mapa de memoria e820 (128 entradas de 20 bytes cada)
-InfoMap:		equ 0x0000000000005000 //informacion general del sistema (256 bytes)
-SystemVariables:	equ 0x0000000000005A00 //variables del sistema (1 KB)
+E820Map:		equ 0x0000000000004000 ; mapa de memoria e820 (128 entradas de 20 bytes cada)
+InfoMap:		equ 0x0000000000005000 ; informacion general del sistema (256 bytes)
+SystemVariables:	equ 0x0000000000005A00 ; variables del sistema (1 KB)
 VBEModeInfoBlock:	equ 0x0000000000005C00	; 256 bytes
 ahci_cmdlist:		equ 0x0000000000070000	; 4096 bytes	0x070000 -> 0x071FFF
 ahci_cmdtable:		equ 0x0000000000072000	; 57344 bytes	0x072000 -> 0x07FFFF

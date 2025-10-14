@@ -106,7 +106,7 @@ int main()
 		// Input de una línea con eco gráfico usando la fuente 8x16
 		char line[128];
 		drawString8x16(20, 40, "Hola modo Video :)", 0x00FFFFFF);
-		drawString8x16(20, 40, "Hay que mejorar la fuente ", 0x00FFFFFF);
+		drawString8x16(20, 56, "La fuente esta bien ", 0x00FFFFFF);
 		
 
     return 0;

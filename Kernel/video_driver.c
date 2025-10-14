@@ -1,6 +1,6 @@
 #include "video_driver.h"
 #include <stdint.h>
-#include "include/bitmap_font8x16.h"
+#include "include/font.h"
 
 #define VBEModeInfoBlock ((uint8_t*)0x0000000000005C00)
 
@@ -53,10 +53,10 @@ void drawFilledRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uin
 
 void drawGlyph8x16(uint32_t x, uint32_t y, char c, uint32_t color) {
     uint8_t uc = (uint8_t)c;
-    const uint8_t *glyph = FONT8x16[uc];
-    for (uint32_t row = 0; row < 16; row++) {
+    const uint8_t *glyph = font[uc]; // Usar la fuente de font.h
+    for (uint32_t row = 0; row < FONT_HEIGHT; row++) {
         uint8_t bits = glyph[row];
-        for (uint32_t col = 0; col < 8; col++) {
+        for (uint32_t col = 0; col < FONT_WIDTH; col++) {
             if (bits & (0x80 >> col)) {
                 putPixel(x + col, y + row, color);
             }
@@ -75,4 +75,7 @@ void drawString8x16(uint32_t x, uint32_t y, const char *s, uint32_t color) {
         drawGlyph8x16(cx, y, *p, color);
         cx += 8;
     }
+}
+void gfxNewline(int *cursorY) {
+    *cursorY += 16; // Avanza una línea (ajusta si tu fuente tiene otra altura)
 }

@@ -10,5 +10,6 @@ void drawGlyph8x16(uint32_t x, uint32_t y, char c, uint32_t color);
 
 // Draw a null-terminated string starting at (x, y)
 void drawString8x16(uint32_t x, uint32_t y, const char *s, uint32_t color);
+void gfxNewline(int *cursorY);
 
 #endif // VIDEO_DRIVER_H

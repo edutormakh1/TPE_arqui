@@ -15,6 +15,8 @@ char readKeyAsciiBlocking();
 // Editing: supports backspace; ends on Enter (\n or \r). Buffer is null-terminated.
 void readLine(char *buffer, unsigned long maxLen);
 
+void readLineVBE(char *buffer, unsigned long maxLen, uint32_t *x, uint32_t y, uint32_t color);
+char readKeyAsciiBlockingVBE(uint32_t *x, uint32_t y, uint32_t color);
 
 
 #endif

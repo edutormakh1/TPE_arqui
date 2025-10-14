@@ -7,6 +7,7 @@
 #include "time.h"
 #include <idtLoader.h>
 #include "video_driver.h"
+#include <keyboard.h>
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -104,10 +105,12 @@ int main()
     ncNewline();
 
 		// Input de una línea con eco gráfico usando la fuente 8x16
-		char line[128];
+		char buffer[128];
 		drawString8x16(20, 40, "Hola modo Video :)", 0x00FFFFFF);
-		drawString8x16(20, 56, "La fuente esta bien ", 0x00FFFFFF);
-		
+		drawString8x16(20, 60, "La fuente esta bien ", 0x00FFFFFF);
+		drawString8x16(20, 80, "escriba algo ", 0x00FFFFFF);
+		readLineVBE(buffer, 128, (uint32_t[]){20}, 100, 0x00FFFFFF);
+		drawString8x16(20, 120, buffer, 0x00FFFFFF);
 
     return 0;
 }

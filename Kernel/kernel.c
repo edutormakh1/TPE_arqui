@@ -50,7 +50,7 @@ void * initializeKernelBinary()
 	ncNewline();
 
 	ncPrint("[Loading modules]");
-	ncNewline();
+	ncNewline(); 
 	void * moduleAddresses[] = {
 		sampleCodeModuleAddress,
 		sampleDataModuleAddress
@@ -89,20 +89,7 @@ int main()
 {
     load_idt();
 
-    ncClear();
-    ncNewline();
-    ncPrintStyle("Arquitectura de computadoras", 0x30);
-    ncNewline();
 
-
-    uint8_t time_buffer[3];
-    getTime(time_buffer);
-    ncPrintHex(time_buffer[0]);
-    ncPrint(":");
-    ncPrintHex(time_buffer[1]);
-    ncPrint(":");
-    ncPrintHex(time_buffer[0]);
-    ncNewline();
 
 		// Input de una línea con eco gráfico usando la fuente 8x16
 		char buffer[128];

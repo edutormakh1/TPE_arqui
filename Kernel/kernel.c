@@ -96,7 +96,8 @@ int main()
 		drawString8x16(20, 40, "Hola modo Video :)", 0x00FFFFFF);
 		drawString8x16(20, 60, "La fuente esta bien ", 0x00FFFFFF);
 		drawString8x16(20, 80, "escriba algo ", 0x00FFFFFF);
-		readLineVBE(buffer, 128, (uint32_t[]){20}, 100, 0x00FFFFFF);
+	// Use existing text-mode readLine from keyboard.c (keeps compatibility with current keyboard driver)
+	readLine(buffer, 128);
 		drawString8x16(20, 120, buffer, 0x00FFFFFF);
 
     return 0;

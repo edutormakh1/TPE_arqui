@@ -44,13 +44,34 @@ VBEInfoPtr VBE_mode_info = (VBEInfoPtr) 0x0000000000005C00;
 
 static inline int kabs(int x) { return x < 0 ? -x : x; }
 
+static int isValid(uint64_t x, uint64_t y) {
+    return x < VBE_mode_info->width && y < VBE_mode_info->height;
+}
 void putPixel(uint32_t hexColor, uint64_t x, uint64_t y) {
+    	// agregamos chequeo de que el pixel este dentro de los limites de la pantalla
+	if (!isValid(x, y)) {
+		return;
+	}
     uint8_t * framebuffer = (uint8_t *) VBE_mode_info->framebuffer;
     uint64_t offset = (x * ((VBE_mode_info->bpp)/8)) + (y * VBE_mode_info->pitch); //calcula posicion del pixel dentro de la memoria
     framebuffer[offset]     =  (hexColor) & 0xFF;
     framebuffer[offset+1]   =  (hexColor >> 8) & 0xFF; 
     framebuffer[offset+2]   =  (hexColor >> 16) & 0xFF;
 }
+uint16_t getScreenHeight() {
+	return VBE_mode_info->height;
+}
+
+uint16_t getScreenWidth() {
+	return VBE_mode_info->width;
+}
+
+/*MOOD TEXTO*/
+
+
+
+
+/*MODO VIDEO*/
 
 void drawLine(uint32_t x0, uint32_t y0, uint32_t x1, uint32_t y1, uint32_t color) {
     int dx = kabs((int)x1 - (int)x0), sx = x0 < x1 ? 1 : -1;

@@ -8,7 +8,7 @@ void * memcpy(void * destination, const void * source, uint64_t length);
 
 char *cpuVendor(char *result);
 void getTime(uint8_t *time_buffer);
-char getPressedKey();
+uint8_t getPressedKey();
 
 // funciones para manejo de puertos
 uint8_t inb(uint16_t port);

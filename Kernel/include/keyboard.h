@@ -15,8 +15,27 @@ char readKeyAsciiBlocking();
 // Editing: supports backspace; ends on Enter (\n or \r). Buffer is null-terminated.
 void readLine(char *buffer, unsigned long maxLen);
 
-void readLineVBE(char *buffer, unsigned long maxLen, uint32_t *x, uint32_t y, uint32_t color);
-char readKeyAsciiBlockingVBE(uint32_t *x, uint32_t y, uint32_t color);
+// Note: VBE-specific readLine/readKey functions removed to keep compatibility with existing kernel.
+
+// Buffer sizes and scancode constants
+#define BUFFER_LENGTH 1024
+#define BREAKCODE_OFFSET 128
+#define LEFT_SHIFT 42
+#define RIGHT_SHIFT 54
+#define LEFT_CONTROL 29
+#define CAPS_LOCK 58
+#define UP_ARROW 72
+#define DOWN_ARROW 80
+#define LEFT_ARROW 75
+#define RIGHT_ARROW 77
+#define LETTERS 26
+
+// Ring-buffer keyboard API
+void clear_buffer(void);
+uint8_t getCharFromBuffer(void);
+uint64_t read_keyboard_buffer(char * buff_copy, uint64_t count);
+void writeStringToBuffer(const char *str);
+uint8_t isPressedKey(char c);
 
 
 #endif

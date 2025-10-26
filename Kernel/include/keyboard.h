@@ -36,6 +36,8 @@ uint8_t getCharFromBuffer(void);
 uint64_t read_keyboard_buffer(char * buff_copy, uint64_t count);
 void writeStringToBuffer(const char *str);
 uint8_t isPressedKey(char c);
+// ISR keyboard handler
+void handlePressedKey(void);
 
 // Entrada de texto con eco gráfico en modo VBE
 void input_line(char *buffer, unsigned int maxLen, uint32_t x, uint32_t y, uint32_t color);

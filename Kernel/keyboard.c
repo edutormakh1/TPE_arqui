@@ -8,12 +8,17 @@ static int shift = 0 ;
 static int capsLock = 0;
 static int copied_registers=0;
 
+// Arreglo global con snapshot de registros (definición para resolver el linker)
+// Orden esperado por storeSnapshot: RAX,RBX,RCX,RDI,RBP,RDI,RSI,R8,R9,R10,R11,R12,R13,R14,R15,RIP,CS,RFLAGS,RSP,SS
+// Inicialmente en cero; el llenado real puede hacerse desde el manejador de excepciones más adelante.
+uint64_t reg_array[20] = {0};
+
 uint16_t buffer_start = 0; // índice del buffer del próximo carácter a leer 
 uint16_t buffer_end = 0; // índice del buffer donde se va a escribir el próximo caracter recibido en el teclado
 uint16_t buffer_current_size = 0; // cantidad de caracteres en el buffer actual (listos para ser leídos)
 
 static uint8_t buffer[BUFFER_LENGTH];
-// static char reg_buff[800]; // ACA FIJARNOS QUÉ TAMAÑO NOS CONVIENE (no usado)
+static char reg_buff[1024]; // buffer para snapshot de registros
 
 static void writeBuffer(unsigned char c);
 
@@ -114,6 +119,7 @@ void handlePressedKey() {
     return;
 }
 
+
 void writeStringToBuffer(const char *str) {
     while (*str) {
         writeBuffer((unsigned char)*str);
@@ -129,6 +135,58 @@ uint8_t isPressedKey(char c) {
     return 0; // Si el char es inválido, retornamos 0
 }
 
+void storeSnapshot(){
+  char * reg_labels[] = {"RAX:    0x", "RBX:    0x", "RCX:    0x", "RDI:    0x", "RBP:    0x", "RDI:    0x", "RSI:    0x",  
+    "R8:     0x", "R9:     0x", "R10:    0x", "R11:    0x", "R12:    0x", "R13:    0x", "R14:    0x", "R15:    0x","RIP:    0x","CS:     0x","RFLAGS: 0x","RSP:    0x", "SS:     0x", 0};
+  uint32_t j = 0; //índice de reg_buff
+
+  for(int i=0 ; reg_labels[i] ; ++i){
+    //Agregamos el string al buffer
+    for(int m=0; reg_labels[i][m]; ++m){
+      reg_buff[j++] = reg_labels[i][m];
+    }
+
+    //Agregamos el nro al buffer en 16 dígitos hexadecimales
+    j += uint64ToRegisterFormat(reg_array[i], reg_buff + j);
+    reg_buff[j++] = '\n';
+  }
+  reg_buff[j] = 0;
+  // printRegisters();
+}
+
+// devuelve la cantidad de caracteres escritos
+uint32_t uint64ToRegisterFormat(uint64_t value, char *dest) {
+    // Escribe exactamente 16 dígitos hex (mayúsculas), con ceros a la izquierda
+    static const char HEX[] = "0123456789ABCDEF";
+    for (int i = 0; i < 16; i++) {
+        int shift = (15 - i) * 4;
+        dest[i] = HEX[(value >> shift) & 0xF];
+    }
+    dest[16] = 0;
+    return 16;
+}
+
+
+//devuelve 1 si ya se llamo a ctrl s y 0 si todavia no se llamo
+//dejamos en copy un string con el nombre del registro y su valor (cada registro separado por un n)
+uint64_t copyRegisters(char * copy){
+    if (!copied_registers){
+        return 0;
+    }
+    int i;
+    for (i=0 ; reg_buff[i] ; i++){
+        copy[i]=reg_buff[i];
+    }
+    copy[i] = 0;
+    return 1;
+}
+
+// void printRegisters() {
+//     ncClear();
+//     for (int i = 0; reg_buff[i] != 0; i++) {
+//         ncPrintChar(reg_buff[i]);
+//     }
+// }
 
 
 // Lee una tecla y la dibuja en modo gráfico VBE (usa scancodeToAscii con shift/caps)
@@ -145,8 +203,8 @@ char readKeyAsciiBlockingVBE(uint32_t *x, uint32_t y, uint32_t color) {
         char ascii = scancodeToAscii[index][sc];
         if (ascii != 0) {
             if ((unsigned char)ascii >= 32) {
-                drawChar(*x, y, ascii, color, 3);
-                
+                // Dibuja con tamaño 1 (8x16) y avanza 8 px
+                drawChar(*x, y, ascii, color,1);
                 *x += 8;
             }
             return ascii;
@@ -183,6 +241,3 @@ void readLineVBE(char *buffer, unsigned long maxLen, uint32_t *x, uint32_t y, ui
         }
     }
 }
-
-
-

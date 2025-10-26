@@ -332,3 +332,20 @@ void drawString(const char *str, uint64_t x, uint64_t y, uint32_t color, uint64_
         drawChar((uint32_t)(x + (uint64_t)FONT_WIDTH * size * i), (uint32_t)y, (uint8_t)str[i], color, size);
     }
 }
+
+void fillCircle(uint64_t x_center, uint64_t y_center, uint64_t radius, uint32_t color){
+    uint64_t x0 = (x_center >= radius) ? x_center - radius : 0;
+    uint64_t y0 = (y_center >= radius) ? y_center - radius : 0;
+    uint64_t x1 = x_center + radius;
+    uint64_t y1 = y_center + radius;
+
+    for (int x = x0; x <= x1; x++) {
+        for (int y = y0; y <= y1; y++) {
+            int dx = x - x_center;
+            int dy = y - y_center;
+            if (dx*dx + dy*dy <= radius*radius) { // si esta adentro del circulo
+                putPixel(color, x, y);
+            }
+        }
+    }
+}

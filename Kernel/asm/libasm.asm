@@ -119,4 +119,3 @@ outb:
 
 	pop rbp
 	ret
-	

@@ -55,4 +55,12 @@ void fillRectangle(uint64_t x0, uint64_t y0, uint64_t x1, uint64_t y1, uint32_t 
 // Dibuja un círculo con centro y radio especificado
 void drawCircle(uint64_t x_center, uint64_t y_center, uint64_t radius, uint32_t color);
 
+// Funciones de texto en modo video
+void vdPrint(const char * str, uint32_t color);
+void vdPutChar(uint8_t ch, uint32_t color);
+void vdClear(void);
+void newLine(void);
+void vdIncreaseTextSize(void);
+void vdDecreaseTextSize(void);
+
 #endif // VIDEO_DRIVER_H

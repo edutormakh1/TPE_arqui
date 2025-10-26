@@ -30,18 +30,25 @@ void readLine(char *buffer, unsigned long maxLen);
 #define RIGHT_ARROW 77
 #define LETTERS 26
 
+
+extern uint64_t reg_array[]; 
+
 // Ring-buffer keyboard API
+void printRegisters();
 void clear_buffer(void);
 uint8_t getCharFromBuffer(void);
 uint64_t read_keyboard_buffer(char * buff_copy, uint64_t count);
 void writeStringToBuffer(const char *str);
+void storeSnapshotRegisters(char * reg_buff);
+uint64_t copyRegisters(char * copy);
+uint32_t uint64ToRegisterFormat(uint64_t value, char *dest);
 uint8_t isPressedKey(char c);
+void writeStringToBuffer(const char *str);
 // ISR keyboard handler
 void handlePressedKey(void);
 
 // Entrada de texto con eco gráfico en modo VBE
-void input_line(char *buffer, unsigned int maxLen, uint32_t x, uint32_t y, uint32_t color);
 char readKeyAsciiBlockingVBE(uint32_t *x, uint32_t y, uint32_t color);
 void readLineVBE(char *buffer, unsigned long maxLen, uint32_t *x, uint32_t y, uint32_t color);
 
-#endif
+#endif 

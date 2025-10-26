@@ -109,13 +109,13 @@ int main()
 
 		// Input de una línea con eco gráfico usando la fuente 8x16
 		char buffer[128];
-		drawString("modo video", 20, 40, 0x00FFFFFF, 3);
-		drawString("Escriba algo y presione Enter:", 20, 80, 0x00FFFFFF, 3);
+		drawString("modo video", 20, 40, 0x00FFFFFF, 1);
+		drawString("Escriba algo y presione Enter:", 20, 80, 0x00FFFFFF, 1);
 		uint32_t x = 20; uint32_t y = 110;
-		/*readLineVBE(buffer, 128, &x, y, 0x00FFFFFF);*/
+		readLineVBE(buffer, 128, &x, y, 0x00FFFFFF);
 		// Mostrar lo que se ingresó debajo
-		drawString("Ingresaste:", 20, y + 20, 0x00FFFFFF, 3);
-		/*drawString(buffer, 20, y + 40, 0x00FFFFFF, 3);*/
+		drawString("Ingresaste:", 20, y + 20, 0x00FFFFFF, 1);
+		drawString(buffer, 20, y + 40, 0x00FFFFFF, 3);
 		
 
 

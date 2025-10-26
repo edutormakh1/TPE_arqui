@@ -51,16 +51,11 @@ void drawRectangle(uint64_t x0, uint64_t y0, uint64_t x1, uint64_t y1, uint32_t 
 
 // Dibuja un rectángulo relleno
 void fillRectangle(uint64_t x0, uint64_t y0, uint64_t x1, uint64_t y1, uint32_t color);
+// helper para limpiar un area (ancho/alto) usado por teclado VBE
+void drawFilledRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color);
 
 // Dibuja un círculo con centro y radio especificado
 void drawCircle(uint64_t x_center, uint64_t y_center, uint64_t radius, uint32_t color);
-
-// Funciones de texto en modo video
-void vdPrint(const char * str, uint32_t color);
-void vdPutChar(uint8_t ch, uint32_t color);
-void vdClear(void);
-void newLine(void);
-void vdIncreaseTextSize(void);
-void vdDecreaseTextSize(void);
+void fillCircle(uint64_t x_center, uint64_t y_center, uint64_t radius, uint32_t color);
 
 #endif // VIDEO_DRIVER_H

@@ -12,4 +12,7 @@ void drawGlyph8x16(uint32_t x, uint32_t y, char c, uint32_t color);
 void drawString8x16(uint32_t x, uint32_t y, const char *s, uint32_t color);
 void gfxNewline(int *cursorY);
 
+// Fill rectangle utility used by keyboard VBE echo
+void drawFilledRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color);
+
 #endif // VIDEO_DRIVER_H

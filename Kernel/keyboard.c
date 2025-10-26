@@ -1,7 +1,7 @@
-#include "keyboard.h"
-#include "lib.h"
-#include "naiveConsole.h"
-#include "video_driver.h"
+#include "include/keyboard.h"
+#include "include/lib.h"
+#include "include/naiveConsole.h"
+#include "include/video_driver.h"
 #include <stdint.h>
 
 static int shift = 0 ;
@@ -13,7 +13,7 @@ uint16_t buffer_end = 0; // índice del buffer donde se va a escribir el próxim
 uint16_t buffer_current_size = 0; // cantidad de caracteres en el buffer actual (listos para ser leídos)
 
 static uint8_t buffer[BUFFER_LENGTH];
-static char reg_buff[800]; // ACA FIJARNOS QUÉ TAMAÑO NOS CONVIENE
+// static char reg_buff[800]; // ACA FIJARNOS QUÉ TAMAÑO NOS CONVIENE (no usado)
 
 static void writeBuffer(unsigned char c);
 
@@ -130,47 +130,58 @@ uint8_t isPressedKey(char c) {
 }
 
 
-// Blocking line read that echoes to the text-mode console (naiveConsole).
-// Implements basic editing: backspace and enter. The buffer is null-terminated.
-void readLine(char *buffer, unsigned long maxLen) {
-    unsigned long idx = 0;
-    uint8_t c;
 
-    if (maxLen == 0) return;
-
+// Lee una tecla y la dibuja en modo gráfico VBE (usa scancodeToAscii con shift/caps)
+char readKeyAsciiBlockingVBE(uint32_t *x, uint32_t y, uint32_t color) {
     while (1) {
-        // Wait for a character in the keyboard ring buffer
-        c = getCharFromBuffer();
-        if (c == (uint8_t)-1) {
-            continue; // busy-wait; interrupts should fill the buffer
-        }
-
-        // Handle newline / carriage return -> finish
-        if (c == '\r' || c == '\n') {
-            buffer[idx] = '\0';
-            ncNewline();
-            return;
-        }
-
-        // Handle backspace
-        if (c == '\b') {
-            if (idx > 0) {
-                idx--;
-                ncPrintChar('\b');
-            }
+        uint8_t sc = (uint8_t)getPressedKey();
+        if (sc >= BREAKCODE_OFFSET) {
+            // ignorar break codes
             continue;
         }
-
-        // Printable character
-        if (idx < maxLen - 1) {
-            buffer[idx++] = (char)c;
-            ncPrintChar((char)c);
-        } else {
-            // buffer full: ignore additional characters
+        char raw = lowerKeys[sc];
+        int isLetter = (raw >= 'a' && raw <= 'z');
+        int index = isLetter ? (shift ^ capsLock) : shift;
+        char ascii = scancodeToAscii[index][sc];
+        if (ascii != 0) {
+            if ((unsigned char)ascii >= 32) {
+                drawGlyph8x16(*x, y, ascii, color);
+                *x += 8;
+            }
+            return ascii;
         }
     }
 }
 
+// Lee una línea de texto en modo gráfico VBE y la deja en buffer (actualiza x mientras escribe)
+void readLineVBE(char *buffer, unsigned long maxLen, uint32_t *x, uint32_t y, uint32_t color) {
+    if (maxLen == 0) return;
+    unsigned long pos = 0;
+    buffer[0] = 0;
+    for (;;) {
+        char c = readKeyAsciiBlockingVBE(x, y, color);
+        if (c == 0) continue;
+        if (c == '\n' || c == '\r') {
+            buffer[pos] = 0;
+            return;
+        }
+        if (c == '\b') {
+            if (pos > 0) {
+                pos--;
+                buffer[pos] = 0;
+                // mover cursor hacia atrás y borrar el último glyph
+                if (*x >= 8) { *x -= 8; }
+                drawFilledRect(*x, y, 8, 16, 0x00000000);
+            }
+            continue;
+        }
+        if ((unsigned char)c < 32) continue;
+        if (pos < maxLen - 1) {
+            buffer[pos++] = c;
+            buffer[pos] = 0;
+        }
+    }
+}
 
 
 

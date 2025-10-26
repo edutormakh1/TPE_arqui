@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "vgadriver": "cpp"
+        "vgadriver": "cpp",
+        "keyboard.h": "c",
+        "naiveconsole.h": "c"
     }
 }

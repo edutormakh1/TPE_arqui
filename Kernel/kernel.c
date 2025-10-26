@@ -3,10 +3,10 @@
 #include <lib.h>
 #include <moduleLoader.h>
 #include <naiveConsole.h>
-#include "keyboard.h"
-#include "time.h"
+#include <keyboard.h>
+#include <time.h>
 #include <idtLoader.h>
-#include "video_driver.h"
+#include <video_driver.h>
 #include <keyboard.h>
 
 extern uint8_t text;
@@ -90,15 +90,18 @@ int main()
     load_idt();
 
 
-
 		// Input de una línea con eco gráfico usando la fuente 8x16
 		char buffer[128];
 		drawString8x16(20, 40, "Hola modo Video :)", 0x00FFFFFF);
 		drawString8x16(20, 60, "La fuente esta bien ", 0x00FFFFFF);
 		drawString8x16(20, 80, "escriba algo ", 0x00FFFFFF);
-	// Use existing text-mode readLine from keyboard.c (keeps compatibility with current keyboard driver)
-	readLine(buffer, 128);
-		drawString8x16(20, 120, buffer, 0x00FFFFFF);
+		// Entrada de texto por el kernel usando lectura directa y eco por carácter (mantiene x por referencia)
+		uint32_t x = 20; uint32_t y = 120;
+		readLineVBE(buffer, 128, &x, y, 0x00FFFFFF);
+		// buffer contiene el texto ingresado; opcionalmente redibujar la línea completa
+		// drawString8x16(20, 120, buffer, 0x00FFFFFF);
+
+	
 
     return 0;
 }

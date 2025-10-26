@@ -130,5 +130,47 @@ uint8_t isPressedKey(char c) {
 }
 
 
+// Blocking line read that echoes to the text-mode console (naiveConsole).
+// Implements basic editing: backspace and enter. The buffer is null-terminated.
+void readLine(char *buffer, unsigned long maxLen) {
+    unsigned long idx = 0;
+    uint8_t c;
+
+    if (maxLen == 0) return;
+
+    while (1) {
+        // Wait for a character in the keyboard ring buffer
+        c = getCharFromBuffer();
+        if (c == (uint8_t)-1) {
+            continue; // busy-wait; interrupts should fill the buffer
+        }
+
+        // Handle newline / carriage return -> finish
+        if (c == '\r' || c == '\n') {
+            buffer[idx] = '\0';
+            ncNewline();
+            return;
+        }
+
+        // Handle backspace
+        if (c == '\b') {
+            if (idx > 0) {
+                idx--;
+                ncPrintChar('\b');
+            }
+            continue;
+        }
+
+        // Printable character
+        if (idx < maxLen - 1) {
+            buffer[idx++] = (char)c;
+            ncPrintChar((char)c);
+        } else {
+            // buffer full: ignore additional characters
+        }
+    }
+}
+
+
 
 

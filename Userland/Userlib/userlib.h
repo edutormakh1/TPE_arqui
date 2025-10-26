@@ -33,6 +33,10 @@ extern void     sys_increase_fontsize();
 extern void     sys_decrease_fontsize();
 extern void     sys_beep(uint32_t freq_hz, uint64_t duration_ms);
 extern void     sys_screen_size(uint32_t *width, uint32_t *height);
+extern void     sys_circle(uint64_t fill, uint64_t *info, uint32_t color);
+extern void     sys_rectangle(uint64_t fill, uint64_t *info, uint32_t color);
+extern void     sys_line(uint64_t *info, uint32_t color);
+extern void     sys_draw_string(const char *s, uint64_t *info, uint32_t color);
 extern void     sys_clear(void);
 extern void     sys_speaker_start(uint32_t freq_hz);
 extern void     sys_speaker_stop(void);
@@ -60,5 +64,14 @@ uint64_t get_key_status(char key);
 uint64_t strlen(char * str);
 int strcmp(char * s1, char * s2);
 uint64_t num_to_str(uint64_t value, char * buffer, uint32_t base);
+
+//FUNCIONES PARA DIBUJAR
+void draw_rectangle(uint64_t x0, uint64_t y0, uint64_t x1, uint64_t y1, uint32_t color);
+void fill_rectangle(uint64_t x0, uint64_t y0, uint64_t x1, uint64_t y1, uint32_t color);
+void draw_circle(uint64_t x_center, uint64_t y_center, uint64_t radius, uint32_t color);
+void fill_circle(uint64_t x_center, uint64_t y_center, uint64_t radius, uint32_t color);
+void draw_string(char * str, uint64_t x, uint64_t y, uint64_t size, uint32_t color);
+void draw_line(uint64_t x0, uint64_t y0, uint64_t x1, uint64_t y1, uint32_t color);
+
 
 #endif

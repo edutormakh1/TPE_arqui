@@ -3,6 +3,3 @@ docker exec -it tpe_arqui_2q2025 make -C /root/Toolchain clean
 docker exec -it tpe_arqui_2q2025 make -C /root/Toolchain all
 docker exec -it tpe_arqui_2q2025 make -C /root clean
 docker exec -it tpe_arqui_2q2025 make -C /root all
-sudo chown edutor:edutor Image/x64BareBonesImage.qcow2
-
-sudo chmod +x Image/x64BareBonesImage.qcow2

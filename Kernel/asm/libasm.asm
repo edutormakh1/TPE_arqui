@@ -1,5 +1,11 @@
 GLOBAL cpuVendor
 GLOBAL getTime
+GLOBAL getSeconds
+GLOBAL getMinutes
+GLOBAL getHour
+GLOBAL getDayOfMonth
+GLOBAL getMonth
+GLOBAL getYear
 GLOBAL getPressedKey
 GLOBAL inb
 GLOBAL outb
@@ -66,8 +72,8 @@ getHour:
 	in al, 0x71
 	ret
 
-getDayOfWeek:
-	mov al, 6
+getDayOfMonth:
+	mov al, 7
 	out 0x70, al
 	in al, 0x71
 	ret

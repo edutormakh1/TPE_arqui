@@ -6,6 +6,8 @@
 void timer_handler();
 int ticks_elapsed();
 int seconds_elapsed();
-void sleep(uint64_t milliseconds);
+void sleep(int miliseconds);
+void get_date(uint8_t *buffer);
+void get_time(uint8_t *buffer);
 
 #endif

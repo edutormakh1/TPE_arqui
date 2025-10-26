@@ -12,4 +12,12 @@ void drawGlyph8x16(uint32_t x, uint32_t y, char c, uint32_t color);
 void drawString8x16(uint32_t x, uint32_t y, const char *s, uint32_t color);
 void gfxNewline(int *cursorY);
 
+// Funciones de texto en modo video
+void vdPrint(const char * str, uint32_t color);
+void vdPutChar(uint8_t ch, uint32_t color);
+void vdClear(void);
+void newLine(void);
+void vdIncreaseTextSize(void);
+void vdDecreaseTextSize(void);
+
 #endif // VIDEO_DRIVER_H

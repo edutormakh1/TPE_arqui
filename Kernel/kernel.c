@@ -90,22 +90,22 @@ int main()
 {
     load_idt();
 
+//LOS BEEP NO ESTAN FUNCIONANDO
+		// // Beep de 440 Hz (nota LA) durante 500ms
+		// beep(440, 500);
 
-		// Beep de 440 Hz (nota LA) durante 500ms
-		beep(440, 500);
+		// // Beep de error (frecuencia baja)
+		// beep(200, 1000);
 
-		// Beep de error (frecuencia baja)
-		beep(200, 1000);
+		// // Beep de éxito (frecuencia alta)
+		// beep(1000, 200);
 
-		// Beep de éxito (frecuencia alta)
-		beep(1000, 200);
-
-		// Melodía simple
-		beep(262, 250); // Do
-		beep(294, 250); // Re
-		beep(330, 250); // Mi
-		beep(349, 250); // Fa
-		beep(392, 250); // Sol
+		// // Melodía simple
+		// beep(262, 250); // Do
+		// beep(294, 250); // Re
+		// beep(330, 250); // Mi
+		// beep(349, 250); // Fa
+		// beep(392, 250); // Sol
 
 		// Input de una línea con eco gráfico usando la fuente 8x16
 		char buffer[128];

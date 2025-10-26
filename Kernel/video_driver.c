@@ -188,7 +188,7 @@ void vdPutChar(uint8_t c, uint32_t color) {
     if (!text_mode) return;
     if (c == '\n') { newLine(); return; }
     if (c == '\b') { deleteChar(); return; }
-    drawGlyph((uint32_t)cursor_x, cursor_y, c, color, text_size);
+    drawChar((uint32_t)cursor_x, cursor_y, c, color, text_size);
     moveCursorRight();
     updateCursor();
 }
@@ -217,7 +217,14 @@ void vdClear(void) {
     fillRectangle(0, 0, VBE_mode_info->width, VBE_mode_info->height, BKG_COLOR);
 }
 
-/* MODO VIDEO */
+
+
+
+
+/*---------------------------------- MODO VIDEO ----------------------------------*/
+
+
+
 
 void drawLine(uint64_t x0, uint64_t y0, uint64_t x1, uint64_t y1, uint32_t color) {
     // Bresenham con enteros de 64 bits para evitar overflow en pantallas grandes
@@ -268,6 +275,10 @@ void drawRectangle(uint64_t x0, uint64_t y0, uint64_t x1, uint64_t y1, uint32_t 
     drawLine(x1 - 1, y0, x1 - 1, y1 - 1, color); // derecha
 }
 
+void drawFilledRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color) {
+    fillRectangle(x, y, (uint64_t)x + width, (uint64_t)y + height, color);
+}
+
 void drawCircle(uint64_t x_center, uint64_t y_center, uint64_t radius, uint32_t color) {
     int64_t x = (int64_t)radius;
     int64_t y = 0;
@@ -294,11 +305,9 @@ void drawCircle(uint64_t x_center, uint64_t y_center, uint64_t radius, uint32_t 
     }
 }
 
-void drawFilledRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color) {
-    fillRectangle(x, y, (uint64_t)x + width, (uint64_t)y + height, color);
-}
 
-void drawGlyph(uint32_t x, uint32_t y, uint8_t c, uint32_t color, uint64_t size) {
+
+void drawChar(uint32_t x, uint32_t y, uint8_t c, uint32_t color, uint64_t size) {
     if (c >= 128) return;
     if (size == 0) size = 1;
 
@@ -320,6 +329,6 @@ void drawString(const char *str, uint64_t x, uint64_t y, uint32_t color, uint64_
     if (str == NULL) return;
     if (size == 0) size = 1;
     for (size_t i = 0; str[i] != '\0'; i++) {
-        drawGlyph((uint32_t)(x + (uint64_t)FONT_WIDTH * size * i), (uint32_t)y, (uint8_t)str[i], color, size);
+        drawChar((uint32_t)(x + (uint64_t)FONT_WIDTH * size * i), (uint32_t)y, (uint8_t)str[i], color, size);
     }
 }

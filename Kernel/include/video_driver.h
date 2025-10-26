@@ -37,8 +37,8 @@ void newLine(void);
  * FUNCIONES DE MODO GRÁFICO / VIDEO
  * ============================= */
 
-// Dibuja un carácter (glyph) en pantalla desde la fuente
-void drawGlyph(uint32_t x, uint32_t y, uint8_t c, uint32_t color, uint64_t size);
+// Dibuja un carácter en pantalla desde la fuente
+void drawChar(uint32_t x, uint32_t y, uint8_t c, uint32_t color, uint64_t size);
 
 // Dibuja una cadena de texto en pantalla
 void drawString(const char *str, uint64_t x, uint64_t y, uint32_t color, uint64_t size);

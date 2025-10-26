@@ -2,6 +2,7 @@
     "files.associations": {
         "vgadriver": "cpp",
         "keyboard.h": "c",
-        "naiveconsole.h": "c"
+        "naiveconsole.h": "c",
+        "font.h": "c"
     }
 }

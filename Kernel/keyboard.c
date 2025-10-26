@@ -145,7 +145,8 @@ char readKeyAsciiBlockingVBE(uint32_t *x, uint32_t y, uint32_t color) {
         char ascii = scancodeToAscii[index][sc];
         if (ascii != 0) {
             if ((unsigned char)ascii >= 32) {
-                drawGlyph8x16(*x, y, ascii, color);
+                drawGlyph(*x, y, ascii, color, 3);
+                
                 *x += 8;
             }
             return ascii;

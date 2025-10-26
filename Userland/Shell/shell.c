@@ -4,6 +4,7 @@
 static HistoryEntry history[HISTORY_MAX];
 static uint32_t history_len = 0;
 
+static void * const sampleTronModuleAddress = (void*)0x500000;
 
 int main(void) {
     sys_enable_textmode();

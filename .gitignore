@@ -6,6 +6,7 @@
 *.img
 *.qcow2
 *.vmdk
+*.compile.sh
 
 #Object files
 *.o

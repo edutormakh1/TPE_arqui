@@ -1,5 +1,6 @@
 #include "shell.h"
 
+
 // historial para redibujar
 static HistoryEntry history[HISTORY_MAX];
 static uint32_t history_len = 0;
@@ -7,6 +8,7 @@ static uint32_t history_len = 0;
 
 int main(void) {
     sys_enable_textmode();
+
 
     char input[INPUT_MAX];
     while (1) {

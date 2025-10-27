@@ -11,9 +11,20 @@ GLOBAL _irq02Handler
 GLOBAL _irq03Handler
 GLOBAL _irq04Handler
 GLOBAL _irq05Handler
+GLOBAL _irq128Handler
 
 GLOBAL _exception0Handler
 GLOBAL _exception6Handler
+
+GLOBAL getPressedKey
+GLOBAL reg_array ; array donde se almacenan los registros cunado se toco ctrl
+
+EXTERN irqDispatcher
+EXTERN exceptionDispatcher
+EXTERN syscalls
+EXTERN printRegisters
+EXTERN getStackBase
+EXTERN main
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher

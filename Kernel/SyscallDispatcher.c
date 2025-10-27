@@ -9,30 +9,35 @@
 #define MAX_CHAR 256
 
 
+// El orden de la tabla DEBE coincidir con los números en Userland/Asm/userlib.asm
+// 0: regs, 1: time, 2: date, 3: read, 4: write, 5: inc_font, 6: dec_font, 7: beep,
+// 8: screen_size, 9: circle, 10: rectangle, 11: line, 12: draw_string, 13: clear,
+// 14: speaker_start, 15: speaker_stop, 16: textmode, 17: videomode, 18: putpixel,
+// 19: key_status, 20: sleep, 21: clear_input_buffer, 22: ticks
 void * syscalls[SYSCALLS_COUNT] = {
-    &sys_write,
-    &sys_read,
-    &sys_date,
-    &sys_time,
-    &sys_regs,
-    &sys_clear,
-    &sys_increase_fontsize,
-    &sys_decrease_fontsize,
-    &sys_beep,
-    &sys_screensize,
-    &sys_circle,
-    &sys_rectangle,
-    &sys_draw_line,
-    &sys_draw_string,
-    &sys_speaker_start,
-    &sys_speaker_stop,
-    &sys_textmode,
-    &sys_videomode,
-    &sys_putpixel,
-    &sys_key_status,
-    &sys_sleep,
-    &sys_clear_input_buffer,
-    &sys_ticks
+    &sys_regs,               // 0
+    &sys_time,               // 1
+    &sys_date,               // 2
+    &sys_read,               // 3
+    &sys_write,              // 4
+    &sys_increase_fontsize,  // 5
+    &sys_decrease_fontsize,  // 6
+    &sys_beep,               // 7
+    &sys_screensize,         // 8
+    &sys_circle,             // 9
+    &sys_rectangle,          // 10
+    &sys_draw_line,          // 11
+    &sys_draw_string,        // 12
+    &sys_clear,              // 13
+    &sys_speaker_start,      // 14
+    &sys_speaker_stop,       // 15
+    &sys_textmode,           // 16
+    &sys_videomode,          // 17
+    &sys_putpixel,           // 18
+    &sys_key_status,         // 19
+    &sys_sleep,              // 20
+    &sys_clear_input_buffer, // 21
+    &sys_ticks               // 22
 };
 
 static uint64_t sys_write(uint64_t fd, const char * buf, uint64_t count) {
@@ -40,6 +45,8 @@ static uint64_t sys_write(uint64_t fd, const char * buf, uint64_t count) {
         return 0;
     }
     uint32_t color = fd == STDERR ? 0xFF0000 : 0xFFFFFF; // Rojo para STDERR, blanco para STDOUT
+   
+
     for(int i=0; i < count; i++) {
         vdPutChar(buf[i], color);
     }

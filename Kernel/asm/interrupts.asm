@@ -11,9 +11,20 @@ GLOBAL _irq02Handler
 GLOBAL _irq03Handler
 GLOBAL _irq04Handler
 GLOBAL _irq05Handler
+GLOBAL _irq128Handler
 
 GLOBAL _exception0Handler
 GLOBAL _exception6Handler
+GLOBAL getPressedKey
+GLOBAL reg_array ; array donde se almacenan los registros cunado se toco ctrl
+
+EXTERN irqDispatcher
+EXTERN exceptionDispatcher
+EXTERN syscalls
+EXTERN printRegisters
+EXTERN getStackBase
+EXTERN main
+
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
@@ -153,7 +164,28 @@ haltcpu:
 	hlt
 	ret
 
+; Syscall handler (int 0x80)
+; Espera número de syscall en RAX y argumentos en rdi,rsi,rdx,rcx,r8,r9 (SysV AMD64)
+; Llama a la tabla 'syscalls' y devuelve su valor en RAX
+_irq128Handler:
+	pushState
+	; chequear el indice
+	cmp rax, 23
+	jge .syscall_end
+	; Cargar la dirección de la tabla de syscalls de forma RIP-relative y luego indexar
+	lea rbx, [rel syscalls]
+	call [rbx + rax * 8] ; llamamos a la syscall
 
+.syscall_end:
+    mov [aux], rax ; preservamos el valor de retorno de la syscall
+    popState
+    mov rax, [aux]
+    iretq
+
+SECTION .data 
+	userland equ 0x400000 
 
 SECTION .bss
 	aux resq 1
+	pressed_key resq 1
+	SNAPSHOT_KEY equ 0x1D ; Left Ctrl key scancode

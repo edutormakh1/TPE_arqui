@@ -58,7 +58,7 @@ void * initializeKernelBinary()
 	};
 
 	loadModules(&endOfKernelBinary, moduleAddresses);
-	ncPrint("[Done]");
+	/*ncPrint("[Done]");
 	ncNewline();
 	ncNewline();
 
@@ -84,13 +84,15 @@ void * initializeKernelBinary()
 
 	ncPrint("[Done]");
 	ncNewline();
-	ncNewline();
+	ncNewline();*/
 	return getStackBase();
 }
 
 int main()
 {
+	
+		load_idt();
+	enableTextMode();
 	((EntryPoint)sampleCodeModuleAddress)();
-
 	return 0;
 }

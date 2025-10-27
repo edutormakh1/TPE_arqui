@@ -9,6 +9,12 @@ static void * const sampleTronModuleAddress = (void*)0x500000;
 int main(void) {
     sys_enable_textmode();
 
+    // Primera línea impresa: el prompt
+    shell_print_string(PROMPT);
+    // Mensaje de inicio vía syscall 
+    shell_print_string("hola");
+    shell_newline();
+
     char input[INPUT_MAX];
     while (1) {
         shell_print_string(PROMPT);

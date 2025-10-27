@@ -2,13 +2,11 @@
 #include <string.h>
 #include <lib.h>
 #include <moduleLoader.h>
-#include <naiveConsole.h>
-#include <keyboard.h>
-#include <time.h>
-#include <idtLoader.h>
-#include <video_driver.h>
-#include <keyboard.h>
-#include <sound.h>
+#include "keyboard.h"
+#include "idtLoader.h"
+#include "time.h"
+#include "video_driver.h"
+#include "interrupts.h"
 
 extern uint8_t text;
 extern uint8_t rodata;
@@ -20,7 +18,7 @@ extern uint8_t endOfKernel;
 static const uint64_t PageSize = 0x1000;
 
 static void * const sampleCodeModuleAddress = (void*)0x400000;
-static void * const sampleTronModuleAddress = (void*)0x500000;
+static void * const sampleDataModuleAddress = (void*)0x500000;
 
 typedef int (*EntryPoint)();
 
@@ -39,60 +37,28 @@ void * getStackBase()
 	);
 }
 
+
 void * initializeKernelBinary()
 {
-	char buffer[10];
-
-	ncPrint("[x64BareBones]");
-	ncNewline();
-
-	ncPrint("CPU Vendor:");
-	ncPrint(cpuVendor(buffer));
-	ncNewline();
-
-	ncPrint("[Loading modules]");
-	ncNewline(); 
 	void * moduleAddresses[] = {
 		sampleCodeModuleAddress,
-		sampleTronModuleAddress
+		sampleDataModuleAddress
 	};
 
 	loadModules(&endOfKernelBinary, moduleAddresses);
-	/*ncPrint("[Done]");
-	ncNewline();
-	ncNewline();
-
-	ncPrint("[Initializing kernel's binary]");
-	ncNewline();
 
 	clearBSS(&bss, &endOfKernel - &bss);
 
 	load_idt();
 
-	ncPrint("  text: 0x");
-	ncPrintHex((uint64_t)&text);
-	ncNewline();
-	ncPrint("  rodata: 0x");
-	ncPrintHex((uint64_t)&rodata);
-	ncNewline();
-	ncPrint("  data: 0x");
-	ncPrintHex((uint64_t)&data);
-	ncNewline();
-	ncPrint("  bss: 0x");
-	ncPrintHex((uint64_t)&bss);
-	ncNewline();
-
-	ncPrint("[Done]");
-	ncNewline();
-	ncNewline();*/
 	return getStackBase();
 }
 
-int main()
-{
-	
-		load_idt();
-	enableTextMode();
+
+
+int main() {
+
 	((EntryPoint)sampleCodeModuleAddress)();
+	
 	return 0;
 }

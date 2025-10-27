@@ -55,7 +55,7 @@ void * initializeKernelBinary()
 	ncNewline(); 
 	void * moduleAddresses[] = {
 		sampleCodeModuleAddress,
-		sampleDataModuleAddress
+		sampleTronModuleAddress
 	};
 
 	loadModules(&endOfKernelBinary, moduleAddresses); 
@@ -71,6 +71,8 @@ void * initializeKernelBinary()
 	ncNewline();
 
 	clearBSS(&bss, &endOfKernel - &bss);
+
+	load_idt();
 
 	ncPrint("  text: 0x");
 	ncPrintHex((uint64_t)&text);

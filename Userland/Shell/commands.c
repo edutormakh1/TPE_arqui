@@ -93,6 +93,6 @@ void print_date(){
 
 }
 void play_tron(){
-    shell_print_string("Juego Tron no implementado aún\n");
+    shell_print_string("Tron game not implemented yet\n");
 }
 //quedan comandos de tron y demas por implementar

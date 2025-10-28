@@ -12,7 +12,7 @@ int main(void) {
     // Primera línea impresa: el prompt
     shell_print_string(PROMPT);
     // Mensaje de inicio vía syscall 
-    shell_print_string("TADEEEEE ESTO FUNCIONAAAAA");
+    shell_print_string("MET OS - tu sistema operativo favorito!\n");
     shell_newline();
 
     char input[INPUT_MAX];

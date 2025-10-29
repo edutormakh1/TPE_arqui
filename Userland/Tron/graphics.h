@@ -1,0 +1,15 @@
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
+
+#include "config.h"
+
+#define PLAYER1_COLOR 0x00FFFF // Verde cian
+#define PLAYER2_COLOR 0xFF00FF // Magenta
+#define GRID_COLOR 0x333333    // Gris oscuro
+#define BACKGROUND_COLOR 0x000000 // Negro
+
+void draw_board();
+void draw_moto(int x, int y, int player_id);
+void clear_screen();
+
+#endif

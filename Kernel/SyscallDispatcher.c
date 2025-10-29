@@ -39,7 +39,18 @@ void * syscalls[SYSCALLS_COUNT] = {
     &sys_clear_input_buffer, // 21
     &sys_ticks               // 22
 };
-
+static uint64_t sys_regs(char * buffer) {
+    return copyRegisters(buffer);
+}
+static void sys_time(uint8_t * buffer) {
+    get_time(buffer);
+}
+static void sys_date(uint8_t * buffer) {
+    get_date(buffer);
+}
+static uint64_t sys_read(char * buf, uint64_t count) {
+   return read_keyboard_buffer(buf, count);
+}
 static uint64_t sys_write(uint64_t fd, const char * buf, uint64_t count) {
     if (fd != STDOUT && fd != STDERR) {
         return 0;
@@ -52,25 +63,6 @@ static uint64_t sys_write(uint64_t fd, const char * buf, uint64_t count) {
     }
     return count;
 }
-static uint64_t sys_read(char * buf, uint64_t count) {
-   return read_keyboard_buffer(buf, count);
-}
-
-static void sys_date(uint8_t * buffer) {
-    get_date(buffer);
-}
-
-static void sys_time(uint8_t * buffer) {
-    get_time(buffer);
-}
-static uint64_t sys_regs(char * buffer) {
-    return copyRegisters(buffer);
-}
-
-static void sys_clear() {
-    vdClear();
-}
-//checkear bien los nombres (text y fontsize)
 static void sys_increase_fontsize() {
     vdIncreaseTextSize();
 }
@@ -78,17 +70,16 @@ static void sys_decrease_fontsize() {
     vdDecreaseTextSize();
 }
 //sonido para el juego
-
 static void sys_beep(uint32_t freq_hz, uint64_t duration) {
     beep(freq_hz, duration);
     
 }
-    
 //obtengo el tamaño de la pantalla
 static void sys_screensize(uint32_t * width, uint32_t * height) {
     *width= getScreenWidth();
     *height= getScreenHeight();
 }
+
 // pos: [x_center, y_center, radius]
 static void sys_circle(uint64_t fill, uint64_t * pos, uint32_t color) {
     if(fill){
@@ -115,6 +106,9 @@ static void sys_draw_string(const char * buf, uint64_t * pos, uint32_t color) {
     drawString(buf, pos[0], pos[1], color, pos[2]);
 }
 
+static void sys_clear() {
+    vdClear();
+}
 
 
 static void sys_speaker_start(uint32_t freq_hz) {

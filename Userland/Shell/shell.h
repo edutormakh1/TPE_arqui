@@ -2,7 +2,7 @@
 
 #define INPUT_MAX 100
 #define HISTORY_MAX 4096
-#define PROMPT ">"
+#define PROMPT "TEM_shell> " 
 #define CURSOR '_'
 #define ERROR_MSG "Use command 'help' to see available commands\n"
 #define HELP_MSG "To change font size press + or -\n Available commands: \n"

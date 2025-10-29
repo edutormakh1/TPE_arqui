@@ -13,4 +13,7 @@ void ncPrintBin(uint64_t value);
 void ncPrintBase(uint64_t value, uint32_t base);
 void ncClear();
 
-#endif
+// Export uintToBase so other modules (e.g., keyboard) can use it
+uint32_t uintToBase(uint64_t value, char *buffer, uint32_t base);
+
+#endif // NAIVE_CONSOLE_H

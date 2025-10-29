@@ -4,6 +4,8 @@
 #include "include/video_driver.h"
 #include <stdint.h>
 
+extern uint8_t getPressedKey();
+
 static int shift = 0 ;
 static int capsLock = 0;
 static int copied_registers=0;
@@ -19,6 +21,7 @@ uint16_t buffer_current_size = 0; // cantidad de caracteres en el buffer actual 
 
 static uint8_t buffer[BUFFER_LENGTH];
 static char reg_buff[1024]; // buffer para snapshot de registros
+#define REG_BUFF_SIZE ((uint32_t)sizeof(reg_buff))
 
 static void writeBuffer(unsigned char c);
 
@@ -136,34 +139,69 @@ uint8_t isPressedKey(char c) {
 }
 
 void storeSnapshot(){
-  char * reg_labels[] = {"RAX:    0x", "RBX:    0x", "RCX:    0x", "RDI:    0x", "RBP:    0x", "RDI:    0x", "RSI:    0x",  
-    "R8:     0x", "R9:     0x", "R10:    0x", "R11:    0x", "R12:    0x", "R13:    0x", "R14:    0x", "R15:    0x","RIP:    0x","CS:     0x","RFLAGS: 0x","RSP:    0x", "SS:     0x", 0};
-  uint32_t j = 0; //índice de reg_buff
+  // Etiquetas corregidas y ordenadas
+    const char *reg_labels[] = {
+        "RAX:    0x", "RBX:    0x", "RCX:    0x", "RDX:    0x",
+        "RBP:    0x", "RSI:    0x", "RDI:    0x",
+        "R8:     0x", "R9:     0x", "R10:    0x", "R11:    0x",
+        "R12:    0x", "R13:    0x", "R14:    0x", "R15:    0x",
+        "RIP:    0x", "CS:     0x", "RFLAGS: 0x", "RSP:    0x", "SS:     0x",
+        NULL
+    };
 
-  for(int i=0 ; reg_labels[i] ; ++i){
-    //Agregamos el string al buffer
-    for(int m=0; reg_labels[i][m]; ++m){
-      reg_buff[j++] = reg_labels[i][m];
+    size_t j = 0;  // índice dentro de reg_buff
+
+    for (int i = 0; reg_labels[i] != NULL; i++) {
+        // Copiar etiqueta
+        for (size_t m = 0; reg_labels[i][m] != '\0'; m++) {
+            if (j + 1 >= REG_BUFF_SIZE) goto end;  // Evita overflow
+            reg_buff[j++] = reg_labels[i][m];
+        }
+
+        // Escribir el número en formato hexadecimal (16 dígitos)
+    if (j + 16 >= REG_BUFF_SIZE) goto end;
+        j += uint64ToRegisterFormat(reg_array[i], reg_buff + j);
+
+        // Salto de línea
+        if (j + 1 >= REG_BUFF_SIZE) goto end;
+        reg_buff[j++] = '\n';
     }
 
-    //Agregamos el nro al buffer en 16 dígitos hexadecimales
-    j += uint64ToRegisterFormat(reg_array[i], reg_buff + j);
-    reg_buff[j++] = '\n';
-  }
-  reg_buff[j] = 0;
-  // printRegisters();
+end:
+    // Terminador nulo
+    if (j < REG_BUFF_SIZE)
+        reg_buff[j] = '\0';
+    else
+        reg_buff[REG_BUFF_SIZE - 1] = '\0';
+
+    // Imprimir el resultado
+    printRegisters();
 }
 
 // devuelve la cantidad de caracteres escritos
 uint32_t uint64ToRegisterFormat(uint64_t value, char *dest) {
-    // Escribe exactamente 16 dígitos hex (mayúsculas), con ceros a la izquierda
-    static const char HEX[] = "0123456789ABCDEF";
-    for (int i = 0; i < 16; i++) {
-        int shift = (15 - i) * 4;
-        dest[i] = HEX[(value >> shift) & 0xF];
+    int64_t zeros_to_pad = 16;
+    uint64_t aux = value;
+
+    // Calcular cuántos ceros hay que agregar
+    while (aux) {
+        aux >>= 4;
+        zeros_to_pad--;
     }
-    dest[16] = 0;
-    return 16;
+
+    uint32_t j = 0;
+    // Agregar los ceros necesarios
+    for (int i = 0; i < zeros_to_pad; i++) {
+        dest[j++] = '0';
+    }
+
+    // Escribir la parte significativa si value ≠ 0
+    if (value) {
+    j += uintToBase(value, dest + j, 16);
+    }
+
+    dest[j] = 0; // null-terminador por si hace falta usarlo como string
+    return j;    // devuelve la cantidad de caracteres escritos
 }
 
 
@@ -181,63 +219,9 @@ uint64_t copyRegisters(char * copy){
     return 1;
 }
 
-// void printRegisters() {
-//     ncClear();
-//     for (int i = 0; reg_buff[i] != 0; i++) {
-//         ncPrintChar(reg_buff[i]);
-//     }
-// }
-
-
-// Lee una tecla y la dibuja en modo gráfico VBE (usa scancodeToAscii con shift/caps)
-char readKeyAsciiBlockingVBE(uint32_t *x, uint32_t y, uint32_t color) {
-    while (1) {
-        uint8_t sc = (uint8_t)getPressedKey();
-        if (sc >= BREAKCODE_OFFSET) {
-            // ignorar break codes
-            continue;
-        }
-        char raw = lowerKeys[sc];
-        int isLetter = (raw >= 'a' && raw <= 'z');
-        int index = isLetter ? (shift ^ capsLock) : shift;
-        char ascii = scancodeToAscii[index][sc];
-        if (ascii != 0) {
-            if ((unsigned char)ascii >= 32) {
-                // Dibuja con tamaño 1 (8x16) y avanza 8 px
-                drawChar(*x, y, ascii, color,1);
-                *x += 8;
-            }
-            return ascii;
-        }
-    }
-}
-
-// Lee una línea de texto en modo gráfico VBE y la deja en buffer (actualiza x mientras escribe)
-void readLineVBE(char *buffer, unsigned long maxLen, uint32_t *x, uint32_t y, uint32_t color) {
-    if (maxLen == 0) return;
-    unsigned long pos = 0;
-    buffer[0] = 0;
-    for (;;) {
-        char c = readKeyAsciiBlockingVBE(x, y, color);
-        if (c == 0) continue;
-        if (c == '\n' || c == '\r') {
-            buffer[pos] = 0;
-            return;
-        }
-        if (c == '\b') {
-            if (pos > 0) {
-                pos--;
-                buffer[pos] = 0;
-                // mover cursor hacia atrás y borrar el último glyph
-                if (*x >= 8) { *x -= 8; }
-                drawFilledRect(*x, y, 8, 16, 0x00000000);
-            }
-            continue;
-        }
-        if ((unsigned char)c < 32) continue;
-        if (pos < maxLen - 1) {
-            buffer[pos++] = c;
-            buffer[pos] = 0;
-        }
+void printRegisters() {
+    ncClear();
+    for (int i = 0; reg_buff[i] != 0; i++) {
+        ncPrintChar(reg_buff[i]);
     }
 }

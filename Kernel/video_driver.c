@@ -200,12 +200,12 @@ void vdPrint(const char *str, uint32_t color) {
     }
 }
 
-void vdIncreaseTextSize(void) {
+void vdIncreaseFontSize(void) {
     if (text_size < MAX_SIZE && text_mode) text_size++;
     updateCursor();
 }
 
-void vdDecreaseTextSize(void) {
+void vdDrecreaseFontSize(void) {
     if (text_size > 1 && text_mode) text_size--;
     updateCursor();
 }
@@ -216,7 +216,6 @@ void vdClear(void) {
     cursor_y = 0;
     fillRectangle(0, 0, VBE_mode_info->width, VBE_mode_info->height, BKG_COLOR);
 }
-
 
 
 

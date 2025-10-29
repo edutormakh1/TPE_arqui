@@ -63,11 +63,31 @@ static uint64_t sys_write(uint64_t fd, const char * buf, uint64_t count) {
     }
     return count;
 }
+static uint64_t sys_read(char * buf, uint64_t count) {
+   return read_keyboard_buffer(buf, count);
+}
+
+static void sys_date(uint8_t * buffer) {
+    get_date(buffer);
+}
+
+static void sys_time(uint8_t * buffer) {
+    get_time(buffer);
+}
+
+static uint64_t sys_regs(char * buffer) {
+    return copyRegisters(buffer);
+}
+
+static void sys_clear() {
+    vdClear();
+}
+//checkear bien los nombres (text y fontsize)
 static void sys_increase_fontsize() {
-    vdIncreaseTextSize();
+    vdIncreaseFontSize();
 }
 static void sys_decrease_fontsize() {
-    vdDecreaseTextSize();
+    vdDrecreaseFontSize();
 }
 //sonido para el juego
 static void sys_beep(uint32_t freq_hz, uint64_t duration) {

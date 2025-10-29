@@ -90,7 +90,7 @@ getYear:
 	in al, 0x71
 	ret
 
-getPressedKey:
+getpressedKey:
 	xor rax, rax 
 .loop:
 	in al, 64h

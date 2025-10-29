@@ -25,8 +25,8 @@ void disableTextMode(void);
 
 void vdSetTextSize(uint8_t size);
 uint8_t vdGetTextSize(void);
-void vdIncreaseTextSize(void);
-void vdDecreaseTextSize(void);
+void vdIncreaseFontSize(void);
+void vdDrecreaseFontSize(void);
 
 void vdPutChar(uint8_t ch, uint32_t color);
 void vdPrint(const char *str, uint32_t color);

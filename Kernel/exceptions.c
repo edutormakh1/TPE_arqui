@@ -36,13 +36,13 @@ static void invalid_opcode(RegisterContext *ctx){
 
 /**
  * Imprime un registro con formato: "NOMBRE: 0xVALOR"
- */
+ *//*
 static void printRegister(const char *name, uint64_t value) {
 // 	vdPrint(name, COLOR_CYAN);
 // 	vdPrint(": 0x", COLOR_WHITE);
 // 	vdPrintHex(value, COLOR_YELLOW);
 // 	newLine();
- }
+ }*/
 
 static void excepHandler(char * msg, RegisterContext *ctx){
 	// vdClear();

@@ -63,6 +63,7 @@ static void sys_date(uint8_t * buffer) {
 static void sys_time(uint8_t * buffer) {
     get_time(buffer);
 }
+
 static uint64_t sys_regs(char * buffer) {
     return copyRegisters(buffer);
 }
@@ -72,10 +73,10 @@ static void sys_clear() {
 }
 //checkear bien los nombres (text y fontsize)
 static void sys_increase_fontsize() {
-    vdIncreaseTextSize();
+    vdIncreaseFontSize();
 }
 static void sys_decrease_fontsize() {
-    vdDecreaseTextSize();
+    vdDrecreaseFontSize();
 }
 //sonido para el juego
 

@@ -1,3 +1,4 @@
+
 GLOBAL _cli
 GLOBAL _sti
 GLOBAL picMasterMask
@@ -15,8 +16,7 @@ GLOBAL _irq128Handler
 
 GLOBAL _exception0Handler
 GLOBAL _exception6Handler
-GLOBAL getPressedKey
-GLOBAL reg_array ; array donde se almacenan los registros cunado se toco ctrl
+
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
@@ -24,8 +24,8 @@ EXTERN syscalls
 EXTERN printRegisters
 EXTERN getStackBase
 EXTERN main
-
-
+EXTERN getPressedKey
+EXTERN reg_array
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 
@@ -85,15 +85,22 @@ SECTION .text
 
 %macro exceptionHandler 1
 	pushState
-
+call printRegisters
 	mov rdi, %1 ; primer parámetro: número de excepción
 	mov rsi, rsp ; segundo parámetro: puntero al contexto (registros en el stack)
 	call exceptionDispatcher
 
-	popState
+
+popState ; vuelvo a tener en [rsp] los registros que me pusheo en el stack la interrupción
+	call getStackBase	        
+	mov qword [rsp+8*3], rax				
+	mov qword [rsp], userland	; cambio el valor de rsp en el contexto guardado para que apunte a userland
 	iretq
 %endmacro
 
+getPressedKey:
+	mov rax, [pressed_key]
+	ret
 
 _hlt:
 	sti
@@ -132,7 +139,48 @@ _irq00Handler:
 
 ;Keyboard
 _irq01Handler:
+	push rax
+	xor rax, rax
+	in al, 0x60 ; guardo la tecla
+	mov [pressed_key], rax
+	cmp rax, SNAPSHOT_KEY
+	jne .doNotCapture
+
+	pop rax
+	mov [reg_array + 0*8],  rax
+	mov [reg_array + 1*8],  rbx
+	mov [reg_array + 2*8],  rcx
+	mov [reg_array + 3*8],  rdx
+	mov [reg_array + 4*8],  rbp
+	mov [reg_array + 5*8],  rdi
+	mov [reg_array + 6*8],  rsi
+	mov [reg_array + 7*8],  r8
+	mov [reg_array + 8*8],  r9
+	mov [reg_array + 9*8], r10
+	mov [reg_array + 10*8], r11
+	mov [reg_array + 11*8], r12
+	mov [reg_array + 12*8], r13
+	mov [reg_array + 13*8], r14
+	mov [reg_array + 14*8], r15
+	mov rax, [rsp+8*0] ; rip
+	mov [reg_array + 15*8], rax
+	mov rax, [rsp+8*1] ; cs
+	mov [reg_array + 16*8], rax
+	mov rax, [rsp+8*2] ; rflags
+	mov [reg_array + 17*8], rax
+	mov rax, [rsp+8*3] ; rsp
+	mov [reg_array + 18*8], rax
+	mov rax, [rsp+8*4] ; ss
+	mov [reg_array + 19*8], rax
+	jmp .continue
+
+.doNotCapture:
+	pop rax
+
+.continue:
 	irqHandlerMaster 1
+
+	
 
 ;Cascade pic never called
 _irq02Handler:
@@ -151,36 +199,33 @@ _irq05Handler:
 	irqHandlerMaster 5
 
 
-;Zero Division Exception
-_exception0Handler:
-	exceptionHandler 0
-
-;Invalid Opcode Exception
-_exception6Handler:
-	exceptionHandler 6
-
-haltcpu:
-	cli
-	hlt
-	ret
-
-; Syscall handler (int 0x80)
-; Espera número de syscall en RAX y argumentos en rdi,rsi,rdx,rcx,r8,r9 (SysV AMD64)
-; Llama a la tabla 'syscalls' y devuelve su valor en RAX
 _irq128Handler:
-	pushState
-	; chequear el indice
-	cmp rax, 23
-	jge .syscall_end
-	; Cargar la dirección de la tabla de syscalls de forma RIP-relative y luego indexar
-	lea rbx, [rel syscalls]
-	call [rbx + rax * 8] ; llamamos a la syscall
+    pushState
+    ; chequear el indice
+    cmp rax, 23
+    jge .syscall_end
+	; rax es el indice, 8 el size de un puntero en 64 bits
+    call [syscalls + rax * 8] ; llamamos a la syscall
 
 .syscall_end:
     mov [aux], rax ; preservamos el valor de retorno de la syscall
     popState
     mov rax, [aux]
     iretq
+
+;Zero Division Exception
+_exception0Handler:
+	exceptionHandler 0
+
+
+; Invalid Operand Exception
+_exception6Handler: 
+	exceptionHandler 6
+
+haltcpu:
+	cli
+	hlt
+	ret
 
 SECTION .data 
 	userland equ 0x400000 

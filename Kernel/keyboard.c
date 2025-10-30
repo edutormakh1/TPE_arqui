@@ -11,7 +11,7 @@ static int capsLock = 0;
 static int copied_registers=0;
 
 // Arreglo global con snapshot de registros (definición para resolver el linker)
-// Orden esperado por storeSnapshot: RAX,RBX,RCX,RDI,RBP,RDI,RSI,R8,R9,R10,R11,R12,R13,R14,R15,RIP,CS,RFLAGS,RSP,SS
+// Orden esperado por storeSnapshot/IRQ1: RAX,RBX,RCX,RDX,RBP,RDI,RSI,R8,R9,R10,R11,R12,R13,R14,R15,RIP,CS,RFLAGS,RSP,SS
 // Inicialmente en cero; el llenado real puede hacerse desde el manejador de excepciones más adelante.
 uint64_t reg_array[20] = {0};
 
@@ -88,9 +88,10 @@ void handlePressedKey() {
     } else if (scancode == LEFT_SHIFT + BREAKCODE_OFFSET || scancode == RIGHT_SHIFT + BREAKCODE_OFFSET) { 
         shift = 0;
     } else if (scancode == LEFT_CONTROL) {
-        // mark that user requested register snapshot; actual snapshot implementation is optional
+        // Trigger a register snapshot and print it. IRQ1 already captured reg_array for this scancode.
+        storeSnapshot();
         copied_registers = 1;
-        return; 
+        return;
     } else if (scancode == CAPS_LOCK) {
         capsLock = (capsLock+1)%2;
     } else if (scancode == 0){
@@ -139,43 +140,22 @@ uint8_t isPressedKey(char c) {
 }
 
 void storeSnapshot(){
-  // Etiquetas corregidas y ordenadas
-    const char *reg_labels[] = {
-        "RAX:    0x", "RBX:    0x", "RCX:    0x", "RDX:    0x",
-        "RBP:    0x", "RSI:    0x", "RDI:    0x",
-        "R8:     0x", "R9:     0x", "R10:    0x", "R11:    0x",
-        "R12:    0x", "R13:    0x", "R14:    0x", "R15:    0x",
-        "RIP:    0x", "CS:     0x", "RFLAGS: 0x", "RSP:    0x", "SS:     0x",
-        NULL
-    };
+    char * reg_labels[] = {"RAX:    0x", "RBX:    0x", "RCX:    0x", "RDX:    0x", "RBP:    0x", "RDI:    0x", "RSI:    0x",  
+     "R8:     0x", "R9:     0x", "R10:    0x", "R11:    0x", "R12:    0x", "R13:    0x", "R14:    0x", "R15:    0x","RIP:    0x","CS:     0x","RFLAGS: 0x","RSP:    0x", "SS:     0x", 0};
+  uint32_t j = 0; //índice de reg_buff
 
-    size_t j = 0;  // índice dentro de reg_buff
-
-    for (int i = 0; reg_labels[i] != NULL; i++) {
-        // Copiar etiqueta
-        for (size_t m = 0; reg_labels[i][m] != '\0'; m++) {
-            if (j + 1 >= REG_BUFF_SIZE) goto end;  // Evita overflow
-            reg_buff[j++] = reg_labels[i][m];
-        }
-
-        // Escribir el número en formato hexadecimal (16 dígitos)
-    if (j + 16 >= REG_BUFF_SIZE) goto end;
-        j += uint64ToRegisterFormat(reg_array[i], reg_buff + j);
-
-        // Salto de línea
-        if (j + 1 >= REG_BUFF_SIZE) goto end;
-        reg_buff[j++] = '\n';
+  for(int i=0 ; reg_labels[i] ; ++i){
+    //Agregamos el string al buffer
+    for(int m=0; reg_labels[i][m]; ++m){
+      reg_buff[j++] = reg_labels[i][m];
     }
 
-end:
-    // Terminador nulo
-    if (j < REG_BUFF_SIZE)
-        reg_buff[j] = '\0';
-    else
-        reg_buff[REG_BUFF_SIZE - 1] = '\0';
-
-    // Imprimir el resultado
-    printRegisters();
+    //Agregamos el nro al buffer. Quiero que todos me queden con 16 dígitos hexadecimales
+    j += uint64ToRegisterFormat(reg_array[i], reg_buff + j);
+    reg_buff[j++] = '\n';
+  }
+  reg_buff[j] = 0;
+  printRegisters();
 }
 
 // devuelve la cantidad de caracteres escritos

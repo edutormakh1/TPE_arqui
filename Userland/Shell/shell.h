@@ -39,3 +39,8 @@ void print_saved_registers();
 void play_tron();
 void test_invalid_opcode();
 void test_divide_by_zero();
+//benchmarks
+void benchmark_fps();          
+void benchmark_cpu();          
+void benchmark_memory();       
+void benchmark_keyboard();     

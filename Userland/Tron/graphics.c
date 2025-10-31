@@ -92,6 +92,11 @@ void draw_board(int board[BOARD_HEIGHT][BOARD_WIDTH]) {
     uint32_t offset_x = (screen_width - (BOARD_WIDTH * cell_size)) / 2;
     uint32_t offset_y = (screen_height - (BOARD_HEIGHT * cell_size)) / 2;
     
+    fill_rectangle(offset_x, offset_y, 
+                  offset_x + BOARD_WIDTH * cell_size, 
+                  offset_y + BOARD_HEIGHT * cell_size, 
+                  BACKGROUND_COLOR);
+
     // Dibujar contenido del tablero
     for (int y = 0; y < BOARD_HEIGHT; y++) {
         for (int x = 0; x < BOARD_WIDTH; x++) {
@@ -111,20 +116,21 @@ void draw_moto_cell(int x, int y, int player_id, uint32_t cell_size, uint32_t of
     uint32_t pixel_y = offset_y + y * cell_size;
     
     uint32_t color = (player_id == PLAYER1_ID) ? PLAYER1_COLOR : PLAYER2_COLOR;
-    
-    // Dibujar celda con un pequeño margen
-    uint32_t margin = 1;
-    fill_rectangle(pixel_x + margin, pixel_y + margin, 
-                  pixel_x + cell_size - margin, pixel_y + cell_size - margin, color);
+
+    // Dibujar celda sin margen
+    fill_rectangle(pixel_x, pixel_y, 
+                  pixel_x + cell_size, pixel_y + cell_size, color);
 }
 
 void draw_board_border(uint32_t offset_x, uint32_t offset_y, uint32_t cell_size) {
-    uint32_t board_x1 = offset_x;
-    uint32_t board_y1 = offset_y;
-    uint32_t board_x2 = offset_x + BOARD_WIDTH * cell_size;
-    uint32_t board_y2 = offset_y + BOARD_HEIGHT * cell_size;
+    uint32_t board_x1 = offset_x - 2;
+    uint32_t board_y1 = offset_y - 2;
+    uint32_t board_x2 = offset_x + BOARD_WIDTH * cell_size + 2;
+    uint32_t board_y2 = offset_y + BOARD_HEIGHT * cell_size + 2;
     
+    // Dibujar borde más grueso
     draw_rectangle(board_x1, board_y1, board_x2, board_y2, GRID_COLOR);
+    draw_rectangle(board_x1 + 1, board_y1 + 1, board_x2 - 1, board_y2 - 1, GRID_COLOR);
 }
 
 void draw_game_info(int mode_select, int score) {

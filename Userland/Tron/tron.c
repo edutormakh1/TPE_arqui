@@ -29,6 +29,7 @@ void tron_main() {
     game_loop();
 }
 
+// =================== INICIALIZACIÓN DEL JUEGO ===================
 void initialize_game() {
     // Limpiar el tablero
     for (int i = 0; i < BOARD_HEIGHT; i++) {
@@ -71,7 +72,10 @@ void initialize_game() {
 //loop principal
 void game_loop() {
     uint64_t last_update = sys_ticks();
-    const uint64_t update_interval = 5;
+    const uint64_t update_interval = 30;
+    draw_board(board);
+    draw_game_info(mode_select, get_score());
+    draw_controls_help(mode_select);
     
     while (game_running) {
         process_input();
@@ -79,16 +83,17 @@ void game_loop() {
         uint64_t current_time = sys_ticks();
         if (current_time - last_update >= update_interval) {
             update_game();
-            
-            // Dibujar todo el juego
-            draw_board(board);
-            draw_game_info(mode_select, get_score());
-            draw_controls_help(mode_select);
+           // Solo redibujar si el juego sigue activo
+            if (game_running) {
+                draw_board(board);
+                draw_game_info(mode_select, get_score());
+                draw_controls_help(mode_select);
+            } 
             
             last_update = current_time;
         }
         
-        sys_sleep(20);
+        sys_sleep(10);
     }
     
     show_game_over_screen(mode_select, winner, get_score());
@@ -182,6 +187,7 @@ void move_moto(Moto *moto, int player_id) {
         case 'R': new_x++; break;
     }
     
+    // Verificar colisiones
     if (check_collision_at(new_x, new_y)) {
         moto->active = 0;
         return;

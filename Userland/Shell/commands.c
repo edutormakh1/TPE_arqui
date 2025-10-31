@@ -1,4 +1,5 @@
 #include "shell.h"
+#include "../Tron/tron.h"
 
 static Command commands[] = {
     {"help", help},
@@ -154,6 +155,9 @@ void print_date(){
 void play_tron(){
     sys_disable_textmode();
     tron_main();
+    sys_clear_input_buffer();
+    sys_enable_textmode();
+    redraw_history();
 }
 //comandos de benchmarking
 void benchmark_fps() {

@@ -2,6 +2,7 @@
 #define TRON_H
 
 #include "config.h"
+#include <stdint.h>
 
 // Estructura para las motos
 typedef struct {
@@ -9,12 +10,14 @@ typedef struct {
     int y;          //  Y
     char direction; // (Up, Down, Left, Right)
     int active;     // 1 si está activa, 0 si está eliminada
+    void (*draw)(struct Moto *);
 } Moto;
 
-
+void tron_main();
+void game_setup();
 void initialize_game(Moto *player1, Moto *player2);
-void update_game(Moto *player1, Moto *player2);
-int check_collision(Moto *moto);
-void draw_board();
+//void update_game(Moto *player1, Moto *player2);
+//int check_collision(Moto *moto);
+
 
 #endif

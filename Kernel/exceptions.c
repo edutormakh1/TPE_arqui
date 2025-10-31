@@ -24,14 +24,6 @@ void exceptionDispatcher(int exception) {
 	}
 }
 
-static void zero_division() {
-	excepHandler(message[0]);
-}
-
-static void invalid_opcode(){
-	excepHandler(message[1]);
-}
-
 
 static void excepHandler(char * msg){
 	vdPrint(msg, COLOR_RED);
@@ -45,4 +37,12 @@ static void excepHandler(char * msg){
 	} while((c=getCharFromBuffer()) != '\n');
 	vdClear();
 
+}
+
+static void zero_division() {
+	excepHandler(message[0]);
+}
+
+static void invalid_opcode(){
+	excepHandler(message[1]);
 }

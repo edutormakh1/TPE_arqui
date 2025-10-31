@@ -10,10 +10,7 @@ static int shift = 0 ;
 static int capsLock = 0;
 static int copied_registers=0;
 
-// Arreglo global con snapshot de registros (definición para resolver el linker)
-// Orden esperado por storeSnapshot/IRQ1: RAX,RBX,RCX,RDX,RBP,RDI,RSI,R8,R9,R10,R11,R12,R13,R14,R15,RIP,CS,RFLAGS,RSP,SS
-// Inicialmente en cero; el llenado real puede hacerse desde el manejador de excepciones más adelante.
-uint64_t reg_array[20] = {0};
+
 
 uint16_t buffer_start = 0; // índice del buffer del próximo carácter a leer 
 uint16_t buffer_end = 0; // índice del buffer donde se va a escribir el próximo caracter recibido en el teclado
@@ -155,7 +152,7 @@ void storeSnapshot(){
     reg_buff[j++] = '\n';
   }
   reg_buff[j] = 0;
-  printRegisters();
+  //printRegisters();
 }
 
 // devuelve la cantidad de caracteres escritos

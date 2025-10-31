@@ -64,7 +64,7 @@ void print_saved_registers(){
     if(sys_regs(buffer)){
         shell_print_string(buffer);
     } else {
-        shell_print_err("No se han guardado registros\n");
+        shell_print_err("No se han guardado registros\n Presione Ctrl para guardar un snapshot de los registros\n");
     }
 }
 // Función para ajustar hora BCD

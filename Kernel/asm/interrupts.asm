@@ -17,6 +17,8 @@ GLOBAL _irq128Handler
 GLOBAL _exception0Handler
 GLOBAL _exception6Handler
 
+GLOBAL getPressedKey
+GLOBAL reg_array
 
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
@@ -24,15 +26,13 @@ EXTERN syscalls
 EXTERN printRegisters
 EXTERN getStackBase
 EXTERN main
-EXTERN getPressedKey
-EXTERN reg_array
 EXTERN irqDispatcher
 EXTERN exceptionDispatcher
 
 SECTION .text
 
 %macro pushState 0
-	push rax
+	
 	push rbx
 	push rcx
 	push rdx
@@ -47,9 +47,11 @@ SECTION .text
 	push r13
 	push r14
 	push r15
+	push rax
 %endmacro
 
 %macro popState 0
+	pop rax
 	pop r15
 	pop r14
 	pop r13
@@ -64,7 +66,7 @@ SECTION .text
 	pop rdx
 	pop rcx
 	pop rbx
-	pop rax
+	
 %endmacro
 
 %macro irqHandlerMaster 1
@@ -147,6 +149,8 @@ _irq01Handler:
 	jne .doNotCapture
 
 	pop rax
+	mov rax, 15
+	mov r8, 10
 	mov [reg_array + 0*8],  rax
 	mov [reg_array + 1*8],  rbx
 	mov [reg_array + 2*8],  rcx
@@ -232,5 +236,6 @@ SECTION .data
 
 SECTION .bss
 	aux resq 1
+	reg_array resq 20 ;20 registros 
 	pressed_key resq 1
 	SNAPSHOT_KEY equ 0x1D ; Left Ctrl key scancode

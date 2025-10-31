@@ -14,10 +14,16 @@ typedef struct {
 } Moto;
 
 void tron_main();
-void game_setup();
-void initialize_game(Moto *player1, Moto *player2);
-//void update_game(Moto *player1, Moto *player2);
-//int check_collision(Moto *moto);
+void initialize_game();
+void game_loop();
+void process_input();
+void update_game();
+void move_moto(Moto *moto, int player_id);
+void change_direction(Moto *moto, char new_direction);
+int check_collision_at(int x, int y);
+int get_score();
+int get_board_value(int x, int y);
+
 
 
 #endif

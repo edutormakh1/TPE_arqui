@@ -152,7 +152,8 @@ void print_date(){
     print_formatted_time_date(date_buffer, '/');
 }
 void play_tron(){
-    shell_print_string("Tron game not implemented yet\n");
+    sys_disable_textmode();
+    tron_main();
 }
 //comandos de benchmarking
 void benchmark_fps() {

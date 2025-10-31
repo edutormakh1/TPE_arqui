@@ -52,7 +52,7 @@ static uint8_t pressedKeys[LETTERS] = {0};
 // Static porque no queremos que se pueda acceder desde otro archivo
 static void writeBuffer(unsigned char c) {
     buffer[buffer_end] = c;
-    buffer_end = (buffer_end + 1) % BUFFER_LENGTH; // si hay buffer overflow, se pisa lo del principio (jodete usuario)
+    buffer_end = (buffer_end + 1) % BUFFER_LENGTH; // si hay buffer overflow, se pisa lo del principio 
     buffer_current_size = (buffer_current_size + 1) % BUFFER_LENGTH;
 }
 
@@ -199,9 +199,9 @@ uint64_t copyRegisters(char * copy){
     return 1;
 }
 
-void printRegisters() {
-    ncClear();
-    for (int i = 0; reg_buff[i] != 0; i++) {
-        ncPrintChar(reg_buff[i]);
-    }
-}
+//void printRegisters() {
+ //   ncClear();
+  //  for (int i = 0; reg_buff[i] != 0; i++) {
+   //     ncPrintChar(reg_buff[i]);
+   // }
+//}

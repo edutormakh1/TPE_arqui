@@ -30,7 +30,7 @@ void draw_game_info(int mode_select, int score);
 void draw_controls_help(int mode_select);
 
 
-void animate_collision(int x, int y, uint32_t cell_size, uint32_t offset_x, uint32_t offset_y);
+void animate_collision(int x, int y, uint32_t cell_size);
 
 // Dibuja una celda del tablero en (x,y) con color absoluto, usando el mismo centrado/escala del tablero
 void draw_cell_xy(int x, int y, uint32_t color);

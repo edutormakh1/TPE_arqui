@@ -44,11 +44,11 @@ int starting_screen() {
 }
 
 void show_game_over_screen(int mode_select, int winner, int score) {
-    sys_sleep(1000); // Pausa
+    sys_sleep(100); // Pausa
     
     if (mode_select == 1) {
         // Singleplayer: mostrar puntaje
-        draw_string("GAME OVER", screen_width/2 - 80, screen_height/2 - 50, 3, 0xFF0000);
+        draw_string("GAME OVER", screen_width/2 - 144, screen_height/2 - 100, 4, 0xFF0000);
         
         char score_text[32];
         char score_str[16];
@@ -62,20 +62,20 @@ void show_game_over_screen(int mode_select, int winner, int score) {
         while (*score_ptr) *ptr++ = *score_ptr++;
         *ptr = '\0';
         
-        draw_string(score_text, screen_width/2 - 60, screen_height/2, 2, PLAYER1_COLOR);
+        draw_string(score_text, screen_width/2 - 80, screen_height/2, 2, 0xFFFF00);
         
     } else {
         // Multiplayer: mostrar ganador
         if (winner == 1) {
-            draw_string("PLAYER 1 WINS!", screen_width/2 - 120, screen_height/2, 3, PLAYER1_COLOR);
+            draw_string("PLAYER 1 WINS!", screen_width/2 - 180, screen_height/2, 3, PLAYER1_COLOR);
         } else if (winner == 2) {
-            draw_string("PLAYER 2 WINS!", screen_width/2 - 120, screen_height/2, 3, PLAYER2_COLOR);
+            draw_string("PLAYER 2 WINS!", screen_width/2 - 180, screen_height/2, 3, PLAYER2_COLOR);
         } else if (winner == 3) {
             draw_string("DRAW!", screen_width/2 - 50, screen_height/2, 3, 0xFFFFFF);
         }
     }
     
-    draw_string("Press Enter to return to shell", screen_width/2 - 140, screen_height/2 + 80, 1, 0xFFFFFF);
+    draw_string("Press Enter to return to shell", screen_width/2 - 120, screen_height/2 + 80, 1, 0xFFFFFF);
 }
 
 // =================== DIBUJO DEL TABLERO ===================
@@ -162,7 +162,7 @@ void draw_game_info(int mode_select, int score) {
             while (*score_ptr) *ptr++ = *score_ptr++;
             *ptr = '\0';
             
-            draw_string(score_text, 10, 10, 2, PLAYER1_COLOR);
+            draw_string(score_text, 10, 10, 2, 0xFFFF00);//score amarillo
             hud_last_score = score;
         }
     }
@@ -180,14 +180,17 @@ void draw_controls_help(int mode_select) {
     }
 }
 
-void animate_collision(int x, int y, uint32_t cell_size, uint32_t offset_x, uint32_t offset_y) {
+void animate_collision(int x, int y, uint32_t cell_size) {
+    uint32_t offset_x = (screen_width - (BOARD_WIDTH * cell_size)) / 2;
+    uint32_t offset_y = (screen_height - (BOARD_HEIGHT * cell_size)) / 2;
+    // Calcular posición central de la celda en la pantalla
     uint32_t center_x = offset_x + x * cell_size + cell_size / 2;
     uint32_t center_y = offset_y + y * cell_size + cell_size / 2;
     
     // Animación simple: círculos concéntricos rojos
-    for (int i = 1; i <= 5; i++) {
+    for (int i = 1; i <= 5; i++){
         draw_circle(center_x, center_y, i * cell_size / 6, 0xFF0000);
-        sys_sleep(10);
+        sys_sleep(5);
     }
 }
 

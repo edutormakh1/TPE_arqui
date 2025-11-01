@@ -1,8 +1,8 @@
 #include "tron.h"
 #include "../Userlib/userlib.h"
 #include "graphics.h"
+#include "logica.h"
 #include "config.h"
-
 // tablero del juego
 static int board[BOARD_HEIGHT][BOARD_WIDTH];
 
@@ -44,6 +44,8 @@ void initialize_game() {
         player1.y = BOARD_HEIGHT / 2;
         player1.direction = 'R';
         player1.active = 1;
+        player1.speed = INITIAL_SPEED;
+      
         
         player2.active = 0; // No se usa
         
@@ -55,11 +57,13 @@ void initialize_game() {
         player1.y = BOARD_HEIGHT / 2;
         player1.direction = 'R';
         player1.active = 1;
+        player1.speed = INITIAL_SPEED;
 
         player2.x = 3 * BOARD_WIDTH / 4;
         player2.y = BOARD_HEIGHT / 2;
         player2.direction = 'L';
         player2.active = 1;
+        player2.speed = INITIAL_SPEED;
         
         board[player1.y][player1.x] = PLAYER1_ID;
         board[player2.y][player2.x] = PLAYER2_ID;
@@ -72,7 +76,8 @@ void initialize_game() {
 //loop principal
 void game_loop() {
     uint64_t last_update = sys_ticks();
-    const uint64_t update_interval = 30;
+    const uint64_t update_interval = 10;
+    // Dibujo inicial del tablero completo (una sola vez)
     draw_board(board);
     draw_game_info(mode_select, get_score());
     draw_controls_help(mode_select);
@@ -82,13 +87,20 @@ void game_loop() {
         
         uint64_t current_time = sys_ticks();
         if (current_time - last_update >= update_interval) {
+            // Actualizar estado del juego
             update_game();
-           // Solo redibujar si el juego sigue activo
+            // Redibujar de forma incremental: solo las nuevas celdas ocupadas por los players
             if (game_running) {
-                draw_board(board);
+                if (mode_select == 1) {
+                    update_square(&player1, PLAYER1_COLOR);
+                } else {
+                    update_square(&player1, PLAYER1_COLOR);
+                    update_square(&player2, PLAYER2_COLOR);
+                }
+                // HUD opcional (barato); si prefieres, podemos actualizar solo cuando cambie el score
                 draw_game_info(mode_select, get_score());
                 draw_controls_help(mode_select);
-            } 
+            }
             
             last_update = current_time;
         }
@@ -177,8 +189,40 @@ void move_moto(Moto *moto, int player_id) {
     if (!moto->active || !game_running) return;
     
     // Calcular nueva posición
-    int new_x = moto->x;
-    int new_y = moto->y;
+        int new_x = moto->x;
+        int new_y = moto->y;
+    
+        // Cantidad de celdas a avanzar este frame según speed (interpreta speed como unidades/celdas por frame)
+        int steps = (int)(moto->speed);
+        if (steps < 1) steps = 1; // al menos 1 para que se note el movimiento
+    
+        uint32_t color = (player_id == PLAYER1_ID) ? PLAYER1_COLOR : PLAYER2_COLOR;
+    
+    for (int i = 0; i < steps && moto->active; i++) {
+            new_x = moto->x;
+            new_y = moto->y;
+        
+            switch (moto->direction) {
+                case 'U': new_y--; break;
+                case 'D': new_y++; break;
+                case 'L': new_x--; break;
+                case 'R': new_x++; break;
+            }
+        
+            // Verificar colisiones paso a paso
+            if (check_collision_at(new_x, new_y)) {
+                moto->active = 0;
+                break;
+            }
+        
+            // Avanzar 1 celda, marcar rastro y dibujar incrementalmente
+            moto->x = new_x;
+            moto->y = new_y;
+            board[moto->y][moto->x] = player_id;
+            update_square(moto, color);
+        }
+        // Ya avanzamos todos los sub-pasos de este frame
+        return;
     
     switch (moto->direction) {
         case 'U': new_y--; break;
@@ -248,4 +292,3 @@ int get_board_value(int x, int y) {
     }
     return board[y][x];
 }
-

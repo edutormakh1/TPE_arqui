@@ -4,10 +4,13 @@
 
 static uint32_t screen_width = 0;
 static uint32_t screen_height = 0;
+// HUD state to avoid overdraw artifacts
+static int hud_last_score = -1;
 
 
 void init_graphics() {
     sys_screen_size(&screen_width, &screen_height);
+    hud_last_score = -1; // reset HUD cache
 }
 
 uint32_t get_width() {
@@ -119,7 +122,7 @@ void draw_moto_cell(int x, int y, int player_id, uint32_t cell_size, uint32_t of
 
     // Dibujar celda sin margen
     fill_rectangle(pixel_x, pixel_y, 
-                  pixel_x + cell_size, pixel_y + cell_size, color);
+     pixel_x + cell_size, pixel_y + cell_size, color);
 }
 
 void draw_board_border(uint32_t offset_x, uint32_t offset_y, uint32_t cell_size) {
@@ -136,24 +139,40 @@ void draw_board_border(uint32_t offset_x, uint32_t offset_y, uint32_t cell_size)
 void draw_game_info(int mode_select, int score) {
     if (mode_select == 1) {
         // Mostrar puntaje en modo singleplayer
-        char score_text[32];
-        char score_str[16];
-        num_to_str(score, score_str, 10);
-        
-        char* ptr = score_text;
-        char* msg = "Score: ";
-        while (*msg) *ptr++ = *msg++;
-        char* score_ptr = score_str;
-        while (*score_ptr) *ptr++ = *score_ptr++;
-        *ptr = '\0';
-        
-        draw_string(score_text, 10, 10, 2, PLAYER1_COLOR);
+        if (score != hud_last_score) {
+            // Limpiar banda del HUD de score antes de redibujar para evitar sobreescrituras
+            uint32_t x = 8;
+            uint32_t y = 8;
+            uint32_t size = 2; // mismo size que el texto
+            // Limpiamos un ancho generoso para cubrir cambios de dígitos (p.ej., 9 -> 10)
+            uint32_t clear_w = screen_width / 4; // ~25% del ancho
+            uint32_t clear_h = 20 * size;        // altura aprox. del texto
+            if (clear_w < 200) clear_w = 200;
+            fill_rectangle(x, y, x + clear_w, y + clear_h, BACKGROUND_COLOR);
+
+            // Construir texto y dibujar
+            char score_text[32];
+            char score_str[16];
+            num_to_str(score, score_str, 10);
+            
+            char* ptr = score_text;
+            char* msg = "Score: ";
+            while (*msg) *ptr++ = *msg++;
+            char* score_ptr = score_str;
+            while (*score_ptr) *ptr++ = *score_ptr++;
+            *ptr = '\0';
+            
+            draw_string(score_text, 10, 10, 2, PLAYER1_COLOR);
+            hud_last_score = score;
+        }
     }
 }
 
 void draw_controls_help(int mode_select) {
     uint32_t y_pos = screen_height - 30;
-    
+    // Limpiar la franja inferior antes de dibujar la ayuda para evitar sobreescrituras
+    fill_rectangle(0, y_pos - 2, screen_width, y_pos + 20, BACKGROUND_COLOR);
+
     if (mode_select == 1) {
         draw_string("Controls: WASD to move, Enter to exit", 10, y_pos, 1, 0xFFFFFF);
     } else {
@@ -168,6 +187,24 @@ void animate_collision(int x, int y, uint32_t cell_size, uint32_t offset_x, uint
     // Animación simple: círculos concéntricos rojos
     for (int i = 1; i <= 5; i++) {
         draw_circle(center_x, center_y, i * cell_size / 6, 0xFF0000);
-        sys_sleep(50);
+        sys_sleep(10);
     }
+}
+
+// Dibuja una celda suelta (x,y) con el mismo cálculo de tamaño/offset que draw_board
+void draw_cell_xy(int x, int y, uint32_t color) {
+    if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT) return;
+
+    uint32_t cell_width = screen_width / BOARD_WIDTH;
+    uint32_t cell_height = screen_height / BOARD_HEIGHT;
+    uint32_t cell_size = (cell_width < cell_height) ? cell_width : cell_height;
+    if (cell_size == 0) cell_size = 1;
+
+    uint32_t offset_x = (screen_width - (BOARD_WIDTH * cell_size)) / 2;
+    uint32_t offset_y = (screen_height - (BOARD_HEIGHT * cell_size)) / 2;
+
+    uint32_t px = offset_x + (uint32_t)x * cell_size;
+    uint32_t py = offset_y + (uint32_t)y * cell_size;
+
+    fill_rectangle(px, py, px + cell_size, py + cell_size, color);
 }

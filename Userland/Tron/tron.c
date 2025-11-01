@@ -74,15 +74,15 @@ void initialize_game() {
 }
 
 //loop principal
-void game_loop() {
+void game_loop(){
     uint64_t last_update = sys_ticks();
-    const uint64_t update_interval = 5;
+    const uint64_t update_interval = 2;
     // Dibujo inicial del tablero completo (una sola vez)
     draw_board(board);
     draw_game_info(mode_select, get_score());
     draw_controls_help(mode_select);
     
-    while (game_running) {
+    while (game_running){
         process_input();
         
         uint64_t current_time = sys_ticks();
@@ -97,7 +97,7 @@ void game_loop() {
                     update_square(&player1, PLAYER1_COLOR);
                     update_square(&player2, PLAYER2_COLOR);
                 }
-                // HUD opcional (barato); si prefieres, podemos actualizar solo cuando cambie el score
+                // HUD opcional (barato);
                 draw_game_info(mode_select, get_score());
                 draw_controls_help(mode_select);
             }
@@ -105,7 +105,7 @@ void game_loop() {
             last_update = current_time;
         }
         
-        sys_sleep(10); //es necesario esto?
+        sys_sleep(2);
     }
     
     show_game_over_screen(mode_select, winner, get_score());
@@ -155,7 +155,7 @@ void process_input() {
     }
 }
 
-// =================== LÓGICA DEL JUEGO ===================
+
 void update_game() {
     if (!game_running) return;
     
@@ -197,7 +197,10 @@ void move_moto(Moto *moto, int player_id) {
         if (steps < 1) steps = 1; // al menos 1 para que se note el movimiento
     
         uint32_t color = (player_id == PLAYER1_ID) ? PLAYER1_COLOR : PLAYER2_COLOR;
-    
+        uint32_t cell_width = get_width() / BOARD_WIDTH;
+    uint32_t cell_height = get_height() / BOARD_HEIGHT;
+    uint32_t cell_size = (cell_width < cell_height) ? cell_width : cell_height;
+
     for (int i = 0; i < steps && moto->active; i++) {
             new_x = moto->x;
             new_y = moto->y;
@@ -212,6 +215,7 @@ void move_moto(Moto *moto, int player_id) {
             // Verificar colisiones paso a paso
             if (check_collision_at(new_x, new_y)) {
                 moto->active = 0;
+                animate_collision(new_x, new_y, cell_size); // Llamar a la animación
                 break;
             }
         

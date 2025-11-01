@@ -175,56 +175,58 @@ void play_song(void) {
     
     print_string("Playing Y Dale Dale Boca\n");
 
-    // MI LA SI DO DO DO DO SI LA SI LA
+    
     sys_beep(N_MI4, 70);   
     sys_beep(N_LA4, 70);   
     sys_beep(N_SI4, 70);   
     sys_beep(N_DO5, 50);
-    //sys_sleep(70);
+    sys_beep(0,50);
     sys_beep(N_DO5, 50); 
-    //sys_sleep(70);  
+    sys_beep(0,50);
     sys_beep(N_DO5, 50);
-    //sys_sleep(70);   
+    sys_beep(0,50);
     sys_beep(N_DO5, 50);
-    //sys_sleep(70);
-    
+    sys_beep(0,50);
+
     sys_beep(N_SI4, 50);
-    //sys_sleep(50);
+    sys_beep(0,50);
     sys_beep(N_LA4, 50);
     sys_beep(N_DO5, 50);
     sys_beep(N_LA4, 70);
-    //sys_sleep(200);
+    sys_beep(0,200);
 //segunda parte
     sys_beep(N_MI4, 70);   
     sys_beep(N_LA4, 70);   
     sys_beep(N_SI4, 70);   
     sys_beep(N_DO5, 50);
-    //sys_sleep(100);
+    sys_beep(0,50);
     sys_beep(N_DO5, 50); 
-    //sys_sleep(100);  
+    sys_beep(0,50);  
     sys_beep(N_DO5, 50);
-    //sys_sleep(100);   
+    sys_beep(0,50);   
     sys_beep(N_DO5, 50);
-    //sys_sleep(100);
+    sys_beep(0,50);
     sys_beep(N_SI4, 50);
     sys_beep(N_LA4, 50);
     sys_beep(N_RE5, 70);
+    sys_beep(0,200);
 
 //tercera parte
     sys_beep(N_LA4,70);
     sys_beep(N_SI4,70);
     sys_beep(N_DO5,70);
     sys_beep(N_RE5,50);
-    //sys_sleep(70);
+    sys_beep(0,50);
     sys_beep(N_RE5,50);
-    //sys_sleep(70);
+    sys_beep(0,50);
     sys_beep(N_RE5,50);
-    //sys_sleep(70);
+    sys_beep(0,50);
     sys_beep(N_MI5,50);
     sys_beep(N_RE5,50);
     sys_beep(N_MI5,50);
     sys_beep(N_RE5,50);
     sys_beep(N_DO5,50);
+    sys_beep(0,200);
 
 //cuarta parte
 
@@ -232,24 +234,27 @@ void play_song(void) {
     sys_beep(N_LA4, 70);   
     sys_beep(N_SI4, 70);   
     sys_beep(N_DO5, 50);
-    //sys_sleep(70);
-    sys_beep(N_DO5, 50); 
-    //sys_sleep(70);  
-    sys_beep(N_DO5, 50);
-    //sys_sleep(70);   
-    sys_beep(N_DO5, 50);
-    //sys_sleep(70);
+    sys_beep(0,50);
+    sys_beep(N_DO5, 40); 
+    sys_beep(0,30);
+    sys_beep(N_DO5, 40);
+    sys_beep(0,30);
+    sys_beep(N_DO5, 40);
+    sys_beep(0,30);
 
     
     sys_beep(N_SI4, 50);
-    //sys_sleep(50);
+    sys_beep(0,30);
     sys_beep(N_SI4, 50);
-    //sys_sleep(50);
+    sys_beep(0,30);
+    sys_beep(N_SI4,30);
+    sys_beep(0,50);
+    
     sys_beep(N_DO5, 50);
     sys_beep(N_SI4, 50);
     sys_beep(N_DO5, 50);
     sys_beep(N_LA4, 50);
-    //sys_sleep(200);
+    
 
     shell_newline();
     sys_clear_input_buffer();

@@ -76,7 +76,7 @@ void initialize_game() {
 //loop principal
 void game_loop() {
     uint64_t last_update = sys_ticks();
-    const uint64_t update_interval = 10;
+    const uint64_t update_interval = 5;
     // Dibujo inicial del tablero completo (una sola vez)
     draw_board(board);
     draw_game_info(mode_select, get_score());
@@ -105,7 +105,7 @@ void game_loop() {
             last_update = current_time;
         }
         
-        sys_sleep(10);
+        sys_sleep(10); //es necesario esto?
     }
     
     show_game_over_screen(mode_select, winner, get_score());

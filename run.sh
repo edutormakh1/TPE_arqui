@@ -18,11 +18,11 @@ CMD_NEW="qemu-system-x86_64 -m $MEM -drive file=$IMG,if=ide,format=qcow2 \
   -audiodev ${BACKEND},id=snd0 -machine pcspk-audiodev=snd0"
 
 echo "$CMD_NEW"
-if $CMD_NEW 2>/dev/null; then
+if $CMD_NEW; then
   exit 0
 fi
 
-echo "Fallo -audiodev. Probando modo legacy..."
-# Legacy: SIN -audio (no existe). Solo variable de entorno + -soundhw pcspk
-exec env QEMU_AUDIO_DRV=${BACKEND} qemu-system-x86_64 -m $MEM \
-  -drive file=$IMG,if=ide,format=qcow2 -soundhw pcspk
+echo "Fallo -audiodev. Ejecutando sin audio..."
+# Ejecutar sin audio si falla el modo moderno
+exec qemu-system-x86_64 -m $MEM \
+  -drive file=$IMG,if=ide,format=qcow2

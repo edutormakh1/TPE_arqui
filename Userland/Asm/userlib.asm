@@ -2,7 +2,7 @@ global sys_write, sys_read, sys_date, sys_time, sys_regs, sys_clear
 global sys_increase_fontsize, sys_decrease_fontsize, sys_beep
 global sys_screen_size, sys_circle, sys_rectangle, sys_line, sys_draw_string
 global sys_enable_textmode, sys_disable_textmode, sys_put_pixel, sys_key_status
-global sys_sleep, sys_clear_input_buffer, sys_ticks
+global sys_sleep, sys_clear_input_buffer, sys_ticks,sys_speaker_start,sys_speaker_stop
 global generate_invalid_opcode
 global printf
 global scanf

@@ -14,21 +14,21 @@ void timer_handler() {
 	ticks++;
 }
 
-int ticks_elapsed() {
+uint64_t ticks_elapsed() {
 	return ticks;
 }
 
 int seconds_elapsed() {
-	return ticks / 18;
+	return ticks / 100;
 }
 
-// Sleep en milisegundos (aproximado, basado en timer tick cada ~18ms)
+// Sleep en milisegundos (aproximado, basado en timer tick cada ~10ms)
 void sleep(int miliseconds) {
 	unsigned long start = ticks;
-	unsigned long end = start + (miliseconds / 18) + 1; // Convertir ms a ticks (aproximado)
-	
-	while (ticks < end) {
-		// Esperar
+	unsigned long target = miliseconds / 10; // Convertir ms a ticks (aproximado)
+
+	while ((ticks - start) < target) {
+		_hlt();
 	}
 }
 void get_date(uint8_t *buffer) {

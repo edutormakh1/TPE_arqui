@@ -107,9 +107,10 @@ inb:
 	push rbp	
 	mov rbp, rsp
 
-	mov dx, di ; puerto en dx
+	mov rdx, rdi ; puerto en dx
 	in al, dx ; leer puerto
 
+	mov rsp,rbp
 	pop rbp
 	ret
 
@@ -119,8 +120,8 @@ outb:
 	push rbp
 	mov rbp, rsp
 
-	mov dx, di ; puerto en dx
-	mov al, sil ; byte a escribir en al
+	mov rdx, rdi ; puerto en dx
+	mov rax, rsi ; byte a escribir en al
 	out dx, al ; escribir puerto
 
 	pop rbp

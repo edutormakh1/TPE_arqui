@@ -2,7 +2,10 @@
 #include <time.h>
 #include "sound.h"
 #include "time.h"
-#include "lib.h"  // Para inb y outb
+
+
+extern uint8_t inb(uint16_t port);
+extern void outb(uint16_t port, uint8_t data);
 
 #define PIT_BASE_HZ 1193180 // Frecuencia base del PIT (Programmable Interval Timer)
 #define PC_SPEAKER_PORT 0x61
@@ -27,13 +30,15 @@ void speaker_start_tone(uint32_t freq_hz){
     uint32_t div = PIT_BASE_HZ / freq_hz; // pues frecuencia deseada = PIT_BASE_HZ / div
     // programo el PIT (canal 2)
     outb(PIT_CONTROL_PORT, PIT_SQUARE_WAVE_MODE); // Modo 3: square wave 
-    outb(PIT_CHANNEL2_DATA_PORT, (uint8_t)(div)); // Byte bajo
+    outb(PIT_CHANNEL2_DATA_PORT, (uint8_t)(div & 0xFF)); // Byte bajo
     outb(PIT_CHANNEL2_DATA_PORT, (uint8_t)(div >> 8)); // Byte alto
 
     // Abro la puerta del speaker
     uint8_t tmp = inb(PC_SPEAKER_PORT); // Lee el estado actual
-    tmp |= SPEAKER_ENABLE_BITS; // Activar bits 0 y 1
-    outb(PC_SPEAKER_PORT, tmp);
+    if((tmp & 3) != 3){ //si los bits 0 y 1 no estan en 1
+        outb(PC_SPEAKER_PORT, tmp | SPEAKER_ENABLE_BITS); // Pongo en 1 los bits 0 y 1
+    }; 
+    
 }
 
 void beep(uint32_t freq_hz, uint64_t duration){

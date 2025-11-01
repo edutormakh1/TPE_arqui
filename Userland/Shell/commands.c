@@ -1,6 +1,17 @@
 #include "shell.h"
 #include "../Tron/tron.h"
 
+#define N_DO4     262
+#define N_RE4     294
+#define N_MI4     330
+#define N_FA4     349
+#define N_SOL4    392
+#define N_LA4     440
+#define N_SI4     494
+#define N_DO5     523
+#define N_RE5     587
+#define N_MI5     659
+
 static Command commands[] = {
     {"help", help},
     {"cls", cls},
@@ -10,6 +21,7 @@ static Command commands[] = {
     {"play_tron", play_tron},
     {"test_invalid_opcode", test_invalid_opcode},
     {"test_divide_by_zero", test_divide_by_zero},
+    {"play_song", play_song},
     {"benchmark_fps", benchmark_fps},
     {"benchmark_cpu", benchmark_cpu},
     {"benchmark_memory", benchmark_memory},
@@ -158,6 +170,89 @@ void play_tron(){
     sys_clear_input_buffer();
     sys_enable_textmode();
     redraw_history();
+}
+void play_song(void) {
+    
+    print_string("Playing Y Dale Dale Boca\n");
+
+    // MI LA SI DO DO DO DO SI LA SI LA
+    sys_beep(N_MI4, 70);   
+    sys_beep(N_LA4, 70);   
+    sys_beep(N_SI4, 70);   
+    sys_beep(N_DO5, 50);
+    //sys_sleep(70);
+    sys_beep(N_DO5, 50); 
+    //sys_sleep(70);  
+    sys_beep(N_DO5, 50);
+    //sys_sleep(70);   
+    sys_beep(N_DO5, 50);
+    //sys_sleep(70);
+    
+    sys_beep(N_SI4, 50);
+    //sys_sleep(50);
+    sys_beep(N_LA4, 50);
+    sys_beep(N_DO5, 50);
+    sys_beep(N_LA4, 70);
+    //sys_sleep(200);
+//segunda parte
+    sys_beep(N_MI4, 70);   
+    sys_beep(N_LA4, 70);   
+    sys_beep(N_SI4, 70);   
+    sys_beep(N_DO5, 50);
+    //sys_sleep(100);
+    sys_beep(N_DO5, 50); 
+    //sys_sleep(100);  
+    sys_beep(N_DO5, 50);
+    //sys_sleep(100);   
+    sys_beep(N_DO5, 50);
+    //sys_sleep(100);
+    sys_beep(N_SI4, 50);
+    sys_beep(N_LA4, 50);
+    sys_beep(N_RE5, 70);
+
+//tercera parte
+    sys_beep(N_LA4,70);
+    sys_beep(N_SI4,70);
+    sys_beep(N_DO5,70);
+    sys_beep(N_RE5,50);
+    //sys_sleep(70);
+    sys_beep(N_RE5,50);
+    //sys_sleep(70);
+    sys_beep(N_RE5,50);
+    //sys_sleep(70);
+    sys_beep(N_MI5,50);
+    sys_beep(N_RE5,50);
+    sys_beep(N_MI5,50);
+    sys_beep(N_RE5,50);
+    sys_beep(N_DO5,50);
+
+//cuarta parte
+
+    sys_beep(N_MI4, 70);   
+    sys_beep(N_LA4, 70);   
+    sys_beep(N_SI4, 70);   
+    sys_beep(N_DO5, 50);
+    //sys_sleep(70);
+    sys_beep(N_DO5, 50); 
+    //sys_sleep(70);  
+    sys_beep(N_DO5, 50);
+    //sys_sleep(70);   
+    sys_beep(N_DO5, 50);
+    //sys_sleep(70);
+
+    
+    sys_beep(N_SI4, 50);
+    //sys_sleep(50);
+    sys_beep(N_SI4, 50);
+    //sys_sleep(50);
+    sys_beep(N_DO5, 50);
+    sys_beep(N_SI4, 50);
+    sys_beep(N_DO5, 50);
+    sys_beep(N_LA4, 50);
+    //sys_sleep(200);
+
+    shell_newline();
+    sys_clear_input_buffer();
 }
 //comandos de benchmarking
 void benchmark_fps() {

@@ -2,19 +2,8 @@
 #include "../Userlib/userlib.h"
 #include "graphics.h"
 #include "logica.h"
+#include "levels.h"
 #include "config.h"
-// tablero del juego
-static int board[BOARD_HEIGHT][BOARD_WIDTH];
-
-//variables del juego
-static int game_running=0;
-static int winner=0; // 0: ninguno, 1: jugador 1, 2: jugador 2
-static int mode_select= 0; //1 si es singleplayer, 2 si es multiplayer
-
-
-static Moto player1;
-static Moto player2;
-
 
 void tron_main() {
     init_graphics();
@@ -23,84 +12,49 @@ void tron_main() {
     if (num == 0) {
         return; // Salir del juego
     }   
-    mode_select = num;
-
-    initialize_game();
+    
+    initialize_game(num);
     game_loop();
 }
 
-// =================== INICIALIZACIÓN DEL JUEGO ===================
-void initialize_game() {
-    // Limpiar el tablero
-    for (int i = 0; i < BOARD_HEIGHT; i++) {
-        for (int j = 0; j < BOARD_WIDTH; j++) {
-            board[i][j] = 0;
-        }
-    }
-
-    if (mode_select == 1) {
-        // MODO SINGLEPLAYER: Una moto en el centro
-        player1.x = BOARD_WIDTH / 2;
-        player1.y = BOARD_HEIGHT / 2;
-        player1.direction = 'R';
-        player1.active = 1;
-        player1.speed = INITIAL_SPEED;
-      
-        
-        player2.active = 0; // No se usa
-        
-        board[player1.y][player1.x] = PLAYER1_ID;
-        
-    } else {
-        // MODO MULTIPLAYER: Dos motos en extremos opuestos
-        player1.x = BOARD_WIDTH / 4;
-        player1.y = BOARD_HEIGHT / 2;
-        player1.direction = 'R';
-        player1.active = 1;
-        player1.speed = INITIAL_SPEED;
-
-        player2.x = 3 * BOARD_WIDTH / 4;
-        player2.y = BOARD_HEIGHT / 2;
-        player2.direction = 'L';
-        player2.active = 1;
-        player2.speed = INITIAL_SPEED;
-        
-        board[player1.y][player1.x] = PLAYER1_ID;
-        board[player2.y][player2.x] = PLAYER2_ID;
-    }
-
-    game_running = 1;
-    winner = 0;
-}
-
-//loop principal
-void game_loop(){
+void game_loop() {
     uint64_t last_update = sys_ticks();
     const uint64_t update_interval = 2;
-    // Dibujo inicial del tablero completo (una sola vez)
-    draw_board(board);
-    draw_game_info(mode_select, get_score());
-    draw_controls_help(mode_select);
     
-    while (game_running){
+    // Dibujo inicial del tablero completo
+    draw_board(get_board());
+    draw_game_info(get_mode_select(), get_score());
+    draw_level_info(); // Mostrar información del nivel
+    draw_controls_help(get_mode_select());
+    
+    while (get_game_running()) {
         process_input();
         
         uint64_t current_time = sys_ticks();
         if (current_time - last_update >= update_interval) {
             // Actualizar estado del juego
-            update_game();
-            // Redibujar de forma incremental: solo las nuevas celdas ocupadas por los players
-            if (game_running) {
-                if (mode_select == 1) {
-                    update_square(&player1, PLAYER1_COLOR);
+            int game_status = update_game();
+            
+            if (game_status == 0) {
+                // Juego terminado
+                break;
+            } else if (game_status == 2) {
+                // Ronda reiniciada, redibujar todo
+                draw_board(get_board());
+            
+            } else if (game_status == 1 && get_game_running()) {
+                // Continúa el juego, redibujar incrementalmente
+                if (get_mode_select() == 1) {
+                    update_square(get_player1(), PLAYER1_COLOR);
                 } else {
-                    update_square(&player1, PLAYER1_COLOR);
-                    update_square(&player2, PLAYER2_COLOR);
+                    update_square(get_player1(), PLAYER1_COLOR);
+                    update_square(get_player2(), PLAYER2_COLOR);
                 }
-                // HUD opcional (barato);
-                draw_game_info(mode_select, get_score());
-                draw_controls_help(mode_select);
+                
             }
+            draw_game_info(get_mode_select(), get_score());
+            draw_level_info(); // Mostrar información del nivel
+            draw_controls_help(get_mode_select());
             
             last_update = current_time;
         }
@@ -108,7 +62,17 @@ void game_loop(){
         sys_sleep(2);
     }
     
-    show_game_over_screen(mode_select, winner, get_score());
+    // Mostrar pantalla de game over
+    // En singleplayer, usar total_score + level_score actual (puntaje acumulado de todos los niveles)
+    // En multiplayer, usar get_score() normal
+    int final_score;
+    if (get_mode_select() == 1) {
+        // En singleplayer, sumar el puntaje del nivel actual al total
+        final_score = get_total_score() + get_level_score();
+    } else {
+        final_score = get_score();
+    }
+    show_game_over_screen(get_mode_select(), get_winner(), final_score);
     
     // Esperar Enter para salir
     char c;
@@ -120,179 +84,37 @@ void game_loop(){
 void process_input() {
     // Controles del jugador 1 (WASD)
     if (sys_key_status('w') || sys_key_status('W')) {
-        change_direction(&player1, 'U');
+        process_player_input(PLAYER1_ID, 'w');
     }
     if (sys_key_status('s') || sys_key_status('S')) {
-        change_direction(&player1, 'D');
+        process_player_input(PLAYER1_ID, 's');
     }
     if (sys_key_status('a') || sys_key_status('A')) {
-        change_direction(&player1, 'L');
+        process_player_input(PLAYER1_ID, 'a');
     }
     if (sys_key_status('d') || sys_key_status('D')) {
-        change_direction(&player1, 'R');
+        process_player_input(PLAYER1_ID, 'd');
     }
     
     // Controles del jugador 2 (IJKL) - solo en multiplayer
-    if (mode_select == 2) {
+    if (get_mode_select() == 2) {
         if (sys_key_status('i') || sys_key_status('I')) {
-            change_direction(&player2, 'U');
+            process_player_input(PLAYER2_ID, 'i');
         }
         if (sys_key_status('k') || sys_key_status('K')) {
-            change_direction(&player2, 'D');
+            process_player_input(PLAYER2_ID, 'k');
         }
         if (sys_key_status('j') || sys_key_status('J')) {
-            change_direction(&player2, 'L');
+            process_player_input(PLAYER2_ID, 'j');
         }
         if (sys_key_status('l') || sys_key_status('L')) {
-            change_direction(&player2, 'R');
+            process_player_input(PLAYER2_ID, 'l');
         }
     }
     
     // Salir del juego
     char c = getchar_nonblock();
     if (c == '\n' || c == 27) {
-        game_running = 0;
+        set_game_running(0);
     }
-}
-
-
-void update_game() {
-    if (!game_running) return;
-    
-    if (mode_select == 1) {
-        // MODO SINGLEPLAYER
-        move_moto(&player1, PLAYER1_ID);
-        
-        if (!player1.active) {
-            winner = 0; // Perdió
-            game_running = 0;
-        }
-    } else {
-        // MODO MULTIPLAYER
-        move_moto(&player1, PLAYER1_ID);
-        move_moto(&player2, PLAYER2_ID);
-        
-        if (!player1.active && !player2.active) {
-            winner = 3; // Empate
-            game_running = 0;
-        } else if (!player1.active) {
-            winner = 2; // Jugador 2 gana
-            game_running = 0;
-        } else if (!player2.active) {
-            winner = 1; // Jugador 1 gana
-            game_running = 0;
-        }
-    }
-}
-
-void move_moto(Moto *moto, int player_id) {
-    if (!moto->active || !game_running) return;
-    
-    // Calcular nueva posición
-        int new_x = moto->x;
-        int new_y = moto->y;
-    
-        // Cantidad de celdas a avanzar este frame según speed (interpreta speed como unidades/celdas por frame)
-        int steps = (int)(moto->speed);
-        if (steps < 1) steps = 1; // al menos 1 para que se note el movimiento
-    
-        uint32_t color = (player_id == PLAYER1_ID) ? PLAYER1_COLOR : PLAYER2_COLOR;
-        uint32_t cell_width = get_width() / BOARD_WIDTH;
-    uint32_t cell_height = get_height() / BOARD_HEIGHT;
-    uint32_t cell_size = (cell_width < cell_height) ? cell_width : cell_height;
-
-    for (int i = 0; i < steps && moto->active; i++) {
-            new_x = moto->x;
-            new_y = moto->y;
-        
-            switch (moto->direction) {
-                case 'U': new_y--; break;
-                case 'D': new_y++; break;
-                case 'L': new_x--; break;
-                case 'R': new_x++; break;
-            }
-        
-            // Verificar colisiones paso a paso
-            if (check_collision_at(new_x, new_y)) {
-                moto->active = 0;
-                animate_collision(new_x, new_y, cell_size); // Llamar a la animación
-                break;
-            }
-        
-            // Avanzar 1 celda, marcar rastro y dibujar incrementalmente
-            moto->x = new_x;
-            moto->y = new_y;
-            board[moto->y][moto->x] = player_id;
-            update_square(moto, color);
-        }
-        // Ya avanzamos todos los sub-pasos de este frame
-        return;
-    
-    switch (moto->direction) {
-        case 'U': new_y--; break;
-        case 'D': new_y++; break;
-        case 'L': new_x--; break;
-        case 'R': new_x++; break;
-    }
-    
-    // Verificar colisiones
-    if (check_collision_at(new_x, new_y)) {
-        moto->active = 0;
-        return;
-    }
-    
-    moto->x = new_x;
-    moto->y = new_y;
-    
-    // Marcar rastro en el tablero
-    board[moto->y][moto->x] = player_id;
-}
-
-void change_direction(Moto *moto, char new_direction) {
-    if (!moto->active) return;
-    
-    // Evitar dirección opuesta
-    if ((moto->direction == 'U' && new_direction == 'D') ||
-        (moto->direction == 'D' && new_direction == 'U') ||
-        (moto->direction == 'L' && new_direction == 'R') ||
-        (moto->direction == 'R' && new_direction == 'L')) {
-        return;
-    }
-    
-    moto->direction = new_direction;
-}
-
-int check_collision_at(int x, int y) {
-    // Colisión con bordes
-    if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT) {
-        return 1;
-    }
-    
-    // Colisión con rastros
-    if (board[y][x] != 0) {
-        return 1;
-    }
-    
-    return 0;
-}
-
-int get_score() {
-    if (mode_select != 1) return 0;
-    
-    int score = 0;
-    for (int i = 0; i < BOARD_HEIGHT; i++) {
-        for (int j = 0; j < BOARD_WIDTH; j++) {
-            if (board[i][j] == PLAYER1_ID) {
-                score++;
-            }
-        }
-    }
-    return score;
-}
-
-int get_board_value(int x, int y) {
-    if (x < 0 || x >= BOARD_WIDTH || y < 0 || y >= BOARD_HEIGHT) {
-        return -1;
-    }
-    return board[y][x];
 }

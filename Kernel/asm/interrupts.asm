@@ -33,6 +33,7 @@ SECTION .text
 
 %macro pushState 0
 	
+	push rax
 	push rbx
 	push rcx
 	push rdx
@@ -47,12 +48,10 @@ SECTION .text
 	push r13
 	push r14
 	push r15
-	push rax
 %endmacro
 
 %macro popState 0
-	pop rax
-	pop r15
+		pop r15
 	pop r14
 	pop r13
 	pop r12
@@ -66,6 +65,7 @@ SECTION .text
 	pop rdx
 	pop rcx
 	pop rbx
+	pop rax
 	
 %endmacro
 
@@ -141,45 +141,65 @@ _irq00Handler:
 
 ;Keyboard
 _irq01Handler:
-	push rax
+pushState
+
+	push rbp 
+	mov rbp, rsp
+	
 	xor rax, rax
 	in al, 0x60 ; guardo la tecla
 	mov [pressed_key], rax
 	cmp rax, SNAPSHOT_KEY
 	jne .doNotCapture
 
-	pop rax
-	mov rax, 15
-	mov r8, 10
+	
+	mov rax, [rbp+8*1]; r15
 	mov [reg_array + 0*8],  rax
-	mov [reg_array + 1*8],  rbx
-	mov [reg_array + 2*8],  rcx
-	mov [reg_array + 3*8],  rdx
-	mov [reg_array + 4*8],  rbp
-	mov [reg_array + 5*8],  rdi
-	mov [reg_array + 6*8],  rsi
-	mov [reg_array + 7*8],  r8
-	mov [reg_array + 8*8],  r9
-	mov [reg_array + 9*8], r10
-	mov [reg_array + 10*8], r11
-	mov [reg_array + 11*8], r12
-	mov [reg_array + 12*8], r13
-	mov [reg_array + 13*8], r14
-	mov [reg_array + 14*8], r15
-	mov rax, [rsp+8*0] ; rip
+	mov rax, [rbp+8*2]; r14
+	mov [reg_array + 1*8],  rax
+	mov rax, [rbp+8*3]; r13
+	mov [reg_array + 2*8],  rax
+	mov rax, [rbp+8*4]; r12
+	mov [reg_array + 3*8],  rax
+	mov rax, [rbp+8*5]; r11
+	mov [reg_array + 4*8],  rax
+	mov rax, [rbp+8*6]; r10
+	mov [reg_array + 5*8],  rax
+	mov rax, [rbp+8*7]; r9
+	mov [reg_array + 6*8],  rax
+	mov rax, [rbp+8*8]; r8
+	mov [reg_array + 7*8],  rax
+	mov rax, [rbp+8*9]; rsi
+	mov [reg_array + 8*8],  rax
+	mov rax, [rbp+8*10]; rdi
+	mov [reg_array + 9*8], rax
+	mov rax, [rbp+8*11]; rbp
+	mov [reg_array + 10*8], rax
+	mov rax, [rbp+8*12]; rdx
+	mov [reg_array + 11*8], rax
+	mov rax, [rbp+8*13]; rcx
+	mov [reg_array + 12*8], rax
+	mov rax, [rbp+8*14]; rbx
+	mov [reg_array + 13*8], rax
+	mov rax, [rbp+8*15]; rax
+	mov [reg_array + 14*8], rax
+	mov rax, [rbp+8*16]; rip
 	mov [reg_array + 15*8], rax
-	mov rax, [rsp+8*1] ; cs
+	mov rax, [rbp+8*17]; cs
 	mov [reg_array + 16*8], rax
-	mov rax, [rsp+8*2] ; rflags
+	mov rax, [rbp+8*18]; rflags
 	mov [reg_array + 17*8], rax
-	mov rax, [rsp+8*3] ; rsp
+	mov rax, [rbp+8*19]; rsp
 	mov [reg_array + 18*8], rax
-	mov rax, [rsp+8*4] ; ss
+	mov rax, [rbp+8*20]; ss
 	mov [reg_array + 19*8], rax
+	pop rbp
+	popState
 	jmp .continue
 
 .doNotCapture:
-	pop rax
+	pop rbp
+	popState
 
 .continue:
 	irqHandlerMaster 1

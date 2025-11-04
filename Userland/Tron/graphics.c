@@ -316,7 +316,6 @@ void animate_collision(int x, int y, uint32_t cell_size) {
     // Animación simple: círculos concéntricos rojos
     for (int i = 1; i <= 5; i++){
         draw_circle(center_x, center_y, i * cell_size / 6, 0xFF0000);
-        sys_sleep(5);
     }
 }
 

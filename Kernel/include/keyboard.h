@@ -40,6 +40,7 @@ uint8_t getCharFromBuffer(void);
 uint64_t read_keyboard_buffer(char * buff_copy, uint64_t count);
 void writeStringToBuffer(const char *str);
 void storeSnapshotRegisters(char * reg_buff);
+void storeSnapshot(void);
 uint64_t copyRegisters(char * copy);
 uint32_t uint64ToRegisterFormat(uint64_t value, char *dest);
 uint8_t isPressedKey(char c);

@@ -152,7 +152,7 @@ void storeSnapshot(){
     reg_buff[j++] = '\n';
   }
   reg_buff[j] = 0;
-  //printRegisters();
+  
 }
 
 // devuelve la cantidad de caracteres escritos
@@ -196,9 +196,4 @@ uint64_t copyRegisters(char * copy){
     return 1;
 }
 
-//void printRegisters() {
- //   ncClear();
-  //  for (int i = 0; reg_buff[i] != 0; i++) {
-   //     ncPrintChar(reg_buff[i]);
-   // }
-//}
+

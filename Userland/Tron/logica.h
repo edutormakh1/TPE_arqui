@@ -15,6 +15,7 @@ void process_player_input(int player_id, char key);
 // =================== ACTUALIZACIÓN ===================
 // Retorna: 0 = juego terminado, 1 = continua normalmente, 2 = ronda reiniciada (necesita redibujar todo)
 int update_game();
+void update_level_score();
 
 // =================== ESTADO DEL JUEGO ===================
 int get_game_running();

@@ -22,7 +22,7 @@ printRegisters:
     mov rdi, 1
     call vdSetTextSize
 
-    mov rdi, [registers+r10] ; carga el string "RAX = ", "RBX = ", etc
+    mov rdi, [registers+r10] ; carga el string "R15 = ", "R14 = ", etc
     mov rsi, 0xFF0000 ; color rojo
     call vdPrint
 
@@ -66,7 +66,8 @@ section .data
     registerR13 db " R13 = ", 0
     registerR14 db " R14 = ", 0
     registerR15 db " R15 = ", 0
-    registers dq  registerRAX, registerR15, registerR14, registerR13, registerR12, registerR11, registerR10,registerR9, registerR8, registerRSI, registerRDI, registerRBP, registerRDX, registerRCX, registerRBX, registerRIP, segmentCS, rflags, registerRSP, segmentSS
+    
+    registers dq  registerR15, registerR14, registerR13, registerR12, registerR11, registerR10, registerR9, registerR8, registerRSI, registerRDI, registerRBP, registerRDX, registerRCX, registerRBX, registerRAX,registerRIP, segmentCS, rflags, registerRSP, segmentSS
     length equ $-registers
 
 section .bss 

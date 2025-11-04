@@ -1,8 +1,6 @@
 #include "shell.h"
 #include "../Tron/tron.h"
 
-
-
 static Command commands[] = {
     {"help","Shows available commands", help},
     {"cls","Clears the screen", cls},
@@ -11,7 +9,7 @@ static Command commands[] = {
     {"print_saved_registers","Prints the CPU registers", print_saved_registers},
     {"play_tron","Plays the Tron game", play_tron},
     {"test_invalid_opcode","Tests invalid opcode exception", test_invalid_opcode},
-    {"test_divide_by_zero","Tests divide by zero exceptions", test_divide_by_zero},
+    {"test_divide_by_zero","Tests divide by zero exception", test_divide_by_zero},
     {"play_song","Plays a song", play_song},
     {"benchmark_fps","Benchmarks for average FPS", benchmark_fps},
     {"benchmark_cpu","Benchmarks for CPU performance", benchmark_cpu},
@@ -47,7 +45,6 @@ void help(){
         shell_print_string(commands[i].description);
         shell_newline();
     }
-    shell_newline();
 }
 
 void cls(){
@@ -248,7 +245,6 @@ void play_song(void) {
     sys_beep(N_DO5, 50);
     sys_beep(N_LA4, 50);
     
-
     shell_newline();
     sys_clear_input_buffer();
 }

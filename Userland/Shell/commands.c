@@ -1,16 +1,7 @@
 #include "shell.h"
 #include "../Tron/tron.h"
 
-#define N_DO4     262
-#define N_RE4     294
-#define N_MI4     330
-#define N_FA4     349
-#define N_SOL4    392
-#define N_LA4     440
-#define N_SI4     494
-#define N_DO5     523
-#define N_RE5     587
-#define N_MI5     659
+
 
 static Command commands[] = {
     {"help", help},
@@ -27,7 +18,7 @@ static Command commands[] = {
     {"benchmark_memory", benchmark_memory},
     {"benchmark_keyboard", benchmark_keyboard},
     {0, 0} // Marca el final de la lista
-}; //lo de usar el 0 como marca de fin no se si es muy correcto
+}; 
 
 // Función para buscar y ejecutar comandos
 void process_line(char * line, uint32_t * history_len) {

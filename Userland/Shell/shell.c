@@ -14,7 +14,7 @@ int main(void) {
 
     // Primera línea impresa: el prompt
     shell_print_string(PROMPT);
-    // Mensaje de inicio vía syscall 
+    // Mensaje de inicio
     shell_print_string("MET OS - tu sistema operativo favorito!\n");
     shell_newline();
 

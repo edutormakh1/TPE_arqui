@@ -28,6 +28,7 @@ typedef void (*Runnable)(void);
 
 typedef struct Command{
      char* name;
+     char* description;
     Runnable function;
 }Command;
 

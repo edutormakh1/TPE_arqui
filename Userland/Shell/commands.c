@@ -4,19 +4,19 @@
 
 
 static Command commands[] = {
-    {"help", help},
-    {"cls", cls},
-    {"print_time", print_time},
-    {"print_date", print_date},
-    {"print_saved_registers", print_saved_registers},
-    {"play_tron", play_tron},
-    {"test_invalid_opcode", test_invalid_opcode},
-    {"test_divide_by_zero", test_divide_by_zero},
-    {"play_song", play_song},
-    {"benchmark_fps", benchmark_fps},
-    {"benchmark_cpu", benchmark_cpu},
-    {"benchmark_memory", benchmark_memory},
-    {"benchmark_keyboard", benchmark_keyboard},
+    {"help","Shows available commands", help},
+    {"cls","Clears the screen", cls},
+    {"print_time","Prints the current time (GMT-3)", print_time},
+    {"print_date","Prints the current date (GMT-3)", print_date},
+    {"print_saved_registers","Prints the CPU registers", print_saved_registers},
+    {"play_tron","Plays the Tron game", play_tron},
+    {"test_invalid_opcode","Tests invalid opcode exception", test_invalid_opcode},
+    {"test_divide_by_zero","Tests divide by zero exceptions", test_divide_by_zero},
+    {"play_song","Plays a song", play_song},
+    {"benchmark_fps","Benchmarks for average FPS", benchmark_fps},
+    {"benchmark_cpu","Benchmarks for CPU performance", benchmark_cpu},
+    {"benchmark_memory","Benchmarks for memory accessing", benchmark_memory},
+    {"benchmark_keyboard","Benchmarks for keyboard latency", benchmark_keyboard},
     {0, 0} // Marca el final de la lista
 }; 
 
@@ -39,11 +39,13 @@ void process_line(char * line, uint32_t * history_len) {
 
 void help(){
     shell_print_string(HELP_MSG);
-    shell_print_string("Comandos disponibles:\n");
+   ;
     for (int i = 0; commands[i].name != 0; i++) {
         shell_print_string("  \'");
         shell_print_string(commands[i].name);
-        shell_print_string(" \'");
+        shell_print_string("' : ");
+        shell_print_string(commands[i].description);
+        shell_newline();
     }
     shell_newline();
 }

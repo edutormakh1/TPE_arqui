@@ -15,9 +15,9 @@ cfg_mbr:		db 0	; Did we boot off of a disk with a proper MBR
 cfg_hdd:		db 0	; Was a bootable drive detected
 
 ; Memory locations
-E820Map:		equ 0x0000000000004000 ; mapa de memoria e820 (128 entradas de 20 bytes cada)
-InfoMap:		equ 0x0000000000005000 ; informacion general del sistema (256 bytes)
-SystemVariables:	equ 0x0000000000005A00 ; variables del sistema (1 KB)
+E820Map:		equ 0x0000000000004000
+InfoMap:		equ 0x0000000000005000
+SystemVariables:	equ 0x0000000000005A00
 VBEModeInfoBlock:	equ 0x0000000000005C00	; 256 bytes
 ahci_cmdlist:		equ 0x0000000000070000	; 4096 bytes	0x070000 -> 0x071FFF
 ahci_cmdtable:		equ 0x0000000000072000	; 57344 bytes	0x072000 -> 0x07FFFF
@@ -65,7 +65,17 @@ msg_MEM:		db ']  [MEM: ', 0
 msg_mb:			db ' MiB]', 0
 msg_startingkernel:	db 'Starting kernel...', 13, 13, 0
 msg_no64:		db 'ERROR: This computer does not support 64-bit mode.', 0
-msg_novesa:		db 'VESA error', 0
+msg_novesa:		db 'VESA error. EDID agotados.', 0
+
+msg_edid_bpp_fail:		db ' bpp fail', 0
+msg_edid_found:		db ' EDID 0', 0
+
+resoluciones_preferidas:		;; En orden de preferencia y así: resx, resy, bpp, 0x0000 (el cero requerido para indexar [8*edx])
+						dw 1024, 768, 24, 0x0000
+						dw 1024, 768, 32, 0x0000
+						dw 1366, 768, 32, 0x0000
+						dw 1024, 600, 32, 0x0000
+resol_prefs_vctor_cant		equ ($-resoluciones_preferidas)/8
 
 ; VESA
 ; Mandatory information for all VBE revisions
